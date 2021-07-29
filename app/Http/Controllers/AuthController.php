@@ -25,7 +25,23 @@ class AuthController extends Controller
      */
     public function login()
     {
-        $credentials = request(['email', 'password']);
+        $type = \request('type');
+        switch ($type) {
+            case 'phys':
+                $credentials = request(['snils', 'password']);
+                break;
+            case 'yur':
+                $credentials = request(['ogrn', 'password']);
+                break;
+            case 'ip':
+                $credentials = request(['ogrnip', 'password']);
+                break;
+            case 'email':
+            default:
+                $credentials = request(['email', 'password']);
+                break;
+        }
+
 
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);

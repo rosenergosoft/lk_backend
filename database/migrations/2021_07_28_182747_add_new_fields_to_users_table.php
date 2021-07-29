@@ -14,9 +14,9 @@ class AddNewFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('ogrn')->nullable()->after('email');
-            $table->integer('ogrnip')->nullable()->after('email');
-            $table->integer('snils')->nullable()->after('email');
+            $table->bigInteger('ogrn')->nullable()->after('email');
+            $table->bigInteger('ogrnip')->nullable()->after('email');
+            $table->bigInteger('snils')->nullable()->after('email');
             $table->integer('phone')->nullable()->after('email');
         });
     }
