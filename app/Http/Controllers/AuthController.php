@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login','registration']]);
     }
 
     /**
@@ -40,7 +41,10 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        /** @var User $user */
+        $user = auth()->user();
+        $user->load(['roles','permissions','profile']);
+        return response()->json($user);
     }
 
     /**
@@ -53,6 +57,30 @@ class AuthController extends Controller
         auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function registration(Request $request)
+    {
+        $data = $request->all();
+
+        $user = new User();
+        $user->email = $request->get('email');
+        $user->name = $request->get('name');
+        $user->snils = $request->get('snils');
+        $user->ogrn = $request->get('ogrn');
+        $user->ogrnip = $request->get('ogrnip');
+        $user->password = bcrypt($request->get('password'));
+
+        $user->save();
+        $name = explode(' ',$request->get('name'));
+        $user->profile()->create([
+            'first_name' => $name[1],
+            'last_name' => $name[0],
+            'middle_name' => $name[2],
+            'account' => $request->get('account')
+        ]);
+
+        return response()->json(['success']);
     }
 
     /**
