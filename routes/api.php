@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,3 +29,11 @@ Route::group([
 });
 
 Route::post('registration',[AuthController::class,'registration']);
+
+Route::group(['middleware' => 'api'],function ($router) {
+    Route::group(['prefix' => 'user'], function () {
+        Route::post('/',[UserController::class,'save']);
+        Route::post('profile',[UserController::class,'saveProfile']);
+        Route::get('list',[UserController::class,'getList']);
+    });
+});

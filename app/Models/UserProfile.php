@@ -13,6 +13,11 @@ class UserProfile extends Model
         'first_name',
         'last_name',
         'middle_name',
-        'account'
+        'account',
+        'pasport',
+        'pasport_granted_by',
+        'pasport_date',
+        'reg_address',
+        'phys_address'
     ];
 }

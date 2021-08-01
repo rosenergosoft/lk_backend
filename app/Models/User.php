@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,11 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasRoles;
+
+    const LOGIN_TYPE_EMAIl = 'email';
+    const LOGIN_TYPE_PHYS = 'phys';
+    const LOGIN_TYPE_YUR = 'yur';
+    const LOGIN_TYPE_IP = 'ip';
 
     /**
      * The attributes that are mass assignable.
@@ -64,10 +70,30 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
-    public function profile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function profile(): HasOne
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function company(): HasOne
+    {
+        return $this->hasOne(Company::class);
+    }
+
+    /**
+     * Load all necessary relations
+     */
+    public function fullLoad()
+    {
+        $this->load([
+            'roles',
+            'permissions',
+            'profile'
+        ]);
     }
 }

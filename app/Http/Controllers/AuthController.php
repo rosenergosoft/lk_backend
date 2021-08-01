@@ -27,16 +27,16 @@ class AuthController extends Controller
     {
         $type = \request('type');
         switch ($type) {
-            case 'phys':
+            case User::LOGIN_TYPE_PHYS:
                 $credentials = request(['snils', 'password']);
                 break;
-            case 'yur':
+            case User::LOGIN_TYPE_YUR:
                 $credentials = request(['ogrn', 'password']);
                 break;
-            case 'ip':
+            case User::LOGIN_TYPE_IP:
                 $credentials = request(['ogrnip', 'password']);
                 break;
-            case 'email':
+            case User::LOGIN_TYPE_EMAIl:
             default:
                 $credentials = request(['email', 'password']);
                 break;
@@ -59,7 +59,7 @@ class AuthController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
-        $user->load(['roles','permissions','profile']);
+        $user->fullLoad();
         return response()->json($user);
     }
 
@@ -80,6 +80,7 @@ class AuthController extends Controller
         $data = $request->all();
 
         $user = new User();
+        $user->login_type = $request->get('login_type');
         $user->email = $request->get('email');
         $user->name = $request->get('name');
         $user->snils = $request->get('snils');
