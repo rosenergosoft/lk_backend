@@ -82,6 +82,7 @@ class AuthController extends Controller
         $user = new User();
         $user->login_type = $request->get('login_type');
         $user->email = $request->get('email');
+        $user->phone = $request->get('phone');
         $user->name = $request->get('name');
         $user->snils = $request->get('snils');
         $user->ogrn = $request->get('ogrn');

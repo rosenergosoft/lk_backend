@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -86,6 +87,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * @return HasMany
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Documents::class);
+    }
+
+    /**
      * Load all necessary relations
      */
     public function fullLoad()
@@ -93,7 +102,8 @@ class User extends Authenticatable implements JWTSubject
         $this->load([
             'roles',
             'permissions',
-            'profile'
+            'profile',
+            'company'
         ]);
     }
 }
