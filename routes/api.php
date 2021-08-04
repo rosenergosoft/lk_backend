@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,5 +40,11 @@ Route::group(['middleware' => 'api'],function ($router) {
         Route::post('documents',[UserController::class,'upload']);
         Route::get('documents',[UserController::class,'getDocuments']);
         Route::get('list',[UserController::class,'getList']);
+    });
+
+    Route::group(['prefix' => 'application'], function () {
+        Route::get('draft',[ApplicationController::class,'getDraft']);
+        Route::post('draft',[ApplicationController::class,'draft']);
+        Route::post('create',[ApplicationController::class,'create']);
     });
 });
