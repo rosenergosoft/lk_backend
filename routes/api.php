@@ -35,6 +35,7 @@ Route::group(['middleware' => 'api'],function ($router) {
         Route::post('/',[UserController::class,'save']);
         Route::post('profile',[UserController::class,'saveProfile']);
         Route::post('company',[UserController::class,'saveCompany']);
+        Route::delete('company',[UserController::class,'deleteCompany']);
         Route::post('documents',[UserController::class,'upload']);
         Route::get('documents',[UserController::class,'getDocuments']);
         Route::get('list',[UserController::class,'getList']);

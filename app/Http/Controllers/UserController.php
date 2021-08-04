@@ -116,6 +116,32 @@ class UserController extends Controller
         ]);
     }
 
+    public function deleteCompany(Request $request)
+    {
+        $id = $request->get('id');
+        if ($id){
+            $company = Company::find($id);
+            if ($company) {
+                $company->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'company' => null
+                ]);
+            }
+
+            return response()->json([
+                'error' => true,
+                'message' => "Can't find model"
+            ]);
+        }
+
+        return response()->json([
+            'error' => true,
+            'message' => "Missed id parameter"
+        ]);
+    }
+
     /**
      * @param Request $request
      * @return JsonResponse
