@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Psy\Util\Json;
 
 class ApplicationController extends Controller
 {
@@ -41,8 +42,24 @@ class ApplicationController extends Controller
         }
 
         return response()->json([
-            'message' => 'No drafts fro this user'
+            'message' => 'No drafts for this user'
         ]);
+    }
+
+    public function getApplication($applicationId): JsonResponse
+    {
+        $application = Application::find($applicationId);
+        if( $application) {
+            return response()->json([
+                'application' => $application,
+                'userProfile' => $application->user->profile,
+                'company'     => $application->user->company ?? ''
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'No application found with this id'
+            ]);
+        }
     }
 
     /**

@@ -50,7 +50,7 @@ class MakeUser extends Command
             //$role     = $details['role'];
         } while (!$this->confirm("Create user {$name} <{$email}>?", true));
 
-        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password)]);
+        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password), 'client_id' => '0']);
         //$user->roles()->attach(array_flip($this->rolesMap)[$role]);
         $this->info("Created new user #{$user->id}");
     }
