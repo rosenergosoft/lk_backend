@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\DisclosureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,5 +48,10 @@ Route::group(['middleware' => 'api'],function ($router) {
         Route::get('get/{id}',[ApplicationController::class,'getApplication']);
         Route::post('draft',[ApplicationController::class,'draft']);
         Route::post('create',[ApplicationController::class,'create']);
+    });
+
+    Route::group(['prefix' => 'disclosure'], function () {
+        Route::get('getByType/{group}/{type}',[DisclosureController::class,'getByType']);
+        Route::get('getList/{group}',[DisclosureController::class,'getList']);
     });
 });
