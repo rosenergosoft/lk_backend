@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Spatie\Permission\Models\Role;
 
 class MakeUser extends Command
 {
@@ -40,18 +41,20 @@ class MakeUser extends Command
      */
     public function handle()
     {
-        //$this->rolesMap = Role::all()->pluck('title', 'id')->toArray();
+        $this->rolesMap = Role::all()->pluck('name', 'id')->toArray();
 
         do {
             $details  = $this->askForUserDetails($details ?? null);
             $name     = $details['name'];
             $email    = $details['email'];
             $password = $details['password'];
-            //$role     = $details['role'];
+            $role     = $details['role'];
         } while (!$this->confirm("Create user {$name} <{$email}>?", true));
 
-        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password), 'client_id' => '0']);
-        //$user->roles()->attach(array_flip($this->rolesMap)[$role]);
+        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password), 'client_id' => '0', ]);
+        $user->assignRole($this->rolesMap[$role]);
+        $permissions = Role::findById($role)->permissions->pluck('name');
+        $user->syncPermissions($permissions);
         $this->info("Created new user #{$user->id}");
     }
 
@@ -64,7 +67,7 @@ class MakeUser extends Command
         $name     = $this->ask('Full name of user?', $defaults['name'] ?? null);
         $email    = $this->askUniqueEmail('Email Address for user?', $defaults['email'] ?? null);
         $password = $this->ask('Password for user? (will be visible)', $defaults['password'] ?? null);
-        $role     = null;//$this->choice('Which role should this user have?', $this->rolesMap, $defaults['role'] ?? null);
+        $role     = $this->choice('Which role should this user have?', $this->rolesMap, $defaults['role'] ?? null);
 
         return compact('name', 'email', 'password', 'role');
     }

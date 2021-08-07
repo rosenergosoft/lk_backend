@@ -20,6 +20,8 @@ class User extends Authenticatable implements JWTSubject
     const LOGIN_TYPE_YUR = 'yur';
     const LOGIN_TYPE_IP = 'ip';
 
+    protected $guard_name = 'api';
+
     /**
      * The attributes that are mass assignable.
      *
