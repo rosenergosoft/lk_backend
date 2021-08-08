@@ -53,5 +53,6 @@ Route::group(['middleware' => 'api'],function ($router) {
     Route::group(['prefix' => 'disclosure'], function () {
         Route::get('getByType/{group}/{type}',[DisclosureController::class,'getByType']);
         Route::get('getList/{group}',[DisclosureController::class,'getList']);
+        Route::post('fileUpload',[DisclosureController::class,'fileUpload']);
     });
 });

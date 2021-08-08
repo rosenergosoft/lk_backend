@@ -41,6 +41,7 @@ class TechnicalCommand extends Command
     {
         $user = User::find(1);
         $role = Role::where('name','super')->first();
+        $user->assignRole($role);
         $permissions = $role->permissions->pluck('name');
         $user->syncPermissions($permissions);
         return 0;
