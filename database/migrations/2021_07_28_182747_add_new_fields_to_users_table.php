@@ -17,7 +17,7 @@ class AddNewFieldsToUsersTable extends Migration
             $table->bigInteger('ogrn')->nullable()->after('email');
             $table->bigInteger('ogrnip')->nullable()->after('email');
             $table->bigInteger('snils')->nullable()->after('email');
-            $table->integer('phone')->nullable()->after('email');
+            $table->bigInteger('phone')->nullable()->after('email');
         });
     }
 

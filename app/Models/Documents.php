@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Documents extends Model
 {
@@ -17,4 +18,9 @@ class Documents extends Model
     const TYPE_YUR_PRIKAZ = 'yur_prikaz';
     const TYPE_YUR_SGR = 'yur_sgr';
     const TYPE_YUR_SPZUN = 'yur_spzun';
+
+    public function signature(): HasOne
+    {
+        return $this->hasOne(DocumentSignature::class,'document_id');
+    }
 }
