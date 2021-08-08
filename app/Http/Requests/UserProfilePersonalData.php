@@ -31,7 +31,7 @@ class UserProfilePersonalData extends FormRequest
             'pasport_granted_by' => 'required',
             'pasport_date' => 'required',
             'reg_address' => 'required',
-            'phys_address' => 'required'
+            'phys_address' => 'max:255'
         ];
     }
 }

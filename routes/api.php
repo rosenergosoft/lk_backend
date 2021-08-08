@@ -39,6 +39,11 @@ Route::group(['middleware' => 'api'],function ($router) {
         Route::delete('company',[UserController::class,'deleteCompany']);
         Route::post('documents',[UserController::class,'upload']);
         Route::get('documents',[UserController::class,'getDocuments']);
+        Route::delete('documents',[UserController::class,'deleteDocument']);
+        Route::get('document/sign',[UserController::class,'getDocumentForSign']);
+        Route::post('document/sign',[UserController::class,'signDocument']);
+        Route::post('document/unsign',[UserController::class,'unsignDocument']);
+        Route::post('document/sendSms',[UserController::class,'sendSms']);
         Route::get('list',[UserController::class,'getList']);
     });
 
