@@ -32,9 +32,9 @@ Route::group([
 
 Route::post('registration',[AuthController::class,'registration']);
 
-Route::group(['middleware' => 'api'],function ($router) {
+Route::group(['middleware' => ['api','active']],function ($router) {
     Route::group(['prefix' => 'user'], function () {
-        Route::post('/',[UserController::class,'save']);
+        Route::post('/',[UserController::class,'update']);
         Route::post('profile',[UserController::class,'saveProfile']);
         Route::post('company',[UserController::class,'saveCompany']);
         Route::delete('company',[UserController::class,'deleteCompany']);
@@ -46,9 +46,13 @@ Route::group(['middleware' => 'api'],function ($router) {
         Route::post('document/unsign',[UserController::class,'unsignDocument']);
         Route::post('document/sendSms',[UserController::class,'sendSms']);
         Route::get('list',[UserController::class,'getList']);
+        Route::get('{id}',[UserController::class,'getUser']);
+        Route::post('save',[UserController::class,'save']);
     });
 
     Route::group(['prefix' => 'application'], function () {
+        Route::get('list',[ApplicationController::class,'list']);
+        Route::get('counts',[ApplicationController::class,'getCounts']);
         Route::get('draft',[ApplicationController::class,'getDraft']);
         Route::get('get/{id}',[ApplicationController::class,'getApplication']);
         Route::post('draft',[ApplicationController::class,'draft']);

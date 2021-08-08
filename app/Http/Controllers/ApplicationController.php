@@ -9,6 +9,57 @@ use Psy\Util\Json;
 
 class ApplicationController extends Controller
 {
+    public function list(Request $request)
+    {
+        $user = auth()->user();
+        $roles = $user->getRoleNames()->toArray();
+
+        if (in_array('admin',$roles)){
+            $list = Application::with(['user.profile','user.company','vendor'])->where('client_id',$user->client_id);
+            $list = $list->paginate(10);
+        }
+
+        if (in_array('super',$roles)) {
+            $list = Application::with(['user.profile','user.company','vendor'])->paginate(10);
+        }
+
+        return response()->json($list);
+    }
+
+    public function getCounts(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        $roles = $user->getRoleNames()->toArray();
+
+        if (in_array('super',$roles)) {
+            $count = [
+                Application::STATUS_ACCEPTED => Application::where('status',Application::STATUS_ACCEPTED)->count(),
+                Application::STATUS_COMPLETED => Application::where('status',Application::STATUS_COMPLETED)->count(),
+                Application::STATUS_IN_PROGRESS => Application::where('status',Application::STATUS_IN_PROGRESS)->count(),
+                Application::STATUS_DECLINED => Application::where('status',Application::STATUS_DECLINED)->count(),
+                Application::STATUS_WAITING_COMPANY_RESPONSE => Application::where('status',Application::STATUS_WAITING_COMPANY_RESPONSE)->count(),
+                Application::STATUS_PROGRESS_INVOICE => Application::where('status',Application::STATUS_PROGRESS_INVOICE)->count(),
+                Application::STATUS_PROGRESS_PREPARING => Application::where('status',Application::STATUS_PROGRESS_PREPARING)->count(),
+            ];
+        }
+
+        if (in_array('admin',$roles)) {
+            $count = [
+                Application::STATUS_ACCEPTED => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_ACCEPTED)->count(),
+                Application::STATUS_COMPLETED => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_COMPLETED)->count(),
+                Application::STATUS_IN_PROGRESS => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_IN_PROGRESS)->count(),
+                Application::STATUS_DECLINED => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_DECLINED)->count(),
+                Application::STATUS_WAITING_COMPANY_RESPONSE => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_WAITING_COMPANY_RESPONSE)->count(),
+                Application::STATUS_PROGRESS_INVOICE => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_PROGRESS_INVOICE)->count(),
+                Application::STATUS_PROGRESS_PREPARING => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_PROGRESS_PREPARING)->count(),
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'counts' => $count
+        ]);
+    }
     /**
      * @return JsonResponse
      */

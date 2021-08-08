@@ -96,6 +96,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Documents::class);
     }
 
+    public function vendor(): HasOne
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
     /**
      * Load all necessary relations
      */
@@ -105,7 +110,8 @@ class User extends Authenticatable implements JWTSubject
             'roles',
             'permissions',
             'profile',
-            'company'
+            'company',
+            'vendor'
         ]);
     }
 }

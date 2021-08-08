@@ -73,7 +73,7 @@ class RolesSeeder extends Seeder
                 'requests_add',
                 'requests_list',
             ],
-            'supplier' => [
+            'vendor' => [
                 'myAccount_edit',
                 'applications_list',
                 'applications_edit',

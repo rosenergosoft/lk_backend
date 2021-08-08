@@ -9,6 +9,7 @@ use App\Models\Documents;
 use App\Models\DocumentSignature;
 use App\Models\SmsCode;
 use App\Models\User;
+use App\Models\Vendor;
 use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -18,11 +19,108 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    public function getUser($id): JsonResponse
+    {
+        $user = User::find($id);
+        $user->fullLoad();
+
+        return response()->json([
+            'success' => true,
+            'user' => $user
+        ]);
+    }
+
+    public function save(Request $request): JsonResponse
+    {
+        $data = $request->all();
+        switch ($data['type']){
+            case 'vendor':
+                if (isset($data['id'])){
+                    $user = User::find($data['id']);
+                    $user->email = $data['email'];
+                    $user->is_active = $data['is_active'];
+                    if ($data['password']){
+                        $user->password = bcrypt($data['password']);
+                    }
+                    $user->name = $data['vendor_name'];
+                    $user->save();
+                    $vendor = $user->vendor;
+                    $vendor->name = $data['vendor_name'];
+                    $vendor->save();
+                } else {
+                    $user = new User();
+                    $user->client_id = auth()->user()->client_id;
+                    $user->type = 'vendor';
+                    $user->login_type = 'email';
+                    $user->is_active = $data['is_active'];
+                    $user->name = $data['vendor_name'];
+                    $user->email = $data['email'];
+                    $user->password = bcrypt($data['password']);
+                    $user->save();
+
+                    $vendor = new Vendor();
+                    $vendor->user_id = $user->id;
+                    $vendor->client_id = auth()->user()->client_id;
+                    $vendor->name = $data['vendor_name'];
+                    $vendor->save();
+                }
+                return response()->json([
+                    'success' => true
+                ]);
+            case 'customer':
+                if (isset($data['id'])){
+                    $user = User::find($data['id']);
+                } else {
+                    $user = new User();
+                }
+                $user->client_id = auth()->user()->client_id;
+                $user->type = 'customer';
+                $user->email = $data['email'];
+                if ($data['snils']){
+                    $user->login_type = 'phys';
+                } elseif ($data['ogrn']) {
+                    $user->login_type = 'yur';
+                } elseif ($data['ogrnip']) {
+                    $user->login_type = 'ip';
+                } else {
+                    $user->login_type = 'email';
+                }
+                $user->is_active = $data['is_active'];
+                if ($data['password']) {
+                    $user->password = bcrypt($data['password']);
+                }
+                $user->save();
+                return response()->json([
+                    'success' => true
+                ]);
+            case 'admin':
+                if (isset($data['id'])){
+                    $user = User::find($data['id']);
+                } else {
+                    $user = new User();
+                }
+                $user->client_id = auth()->user()->client_id;
+                $user->type = 'admin';
+                $user->email = $data['email'];
+                $user->is_active = $data['is_active'];
+                if ($data['password']) {
+                    $user->password = bcrypt($data['password']);
+                }
+                $user->save();
+                return response()->json([
+                    'success' => true
+                ]);
+        }
+
+        return response()->json([
+            'error' => true
+        ]);
+    }
     /**
      * @param UserData $request
      * @return JsonResponse
      */
-    public function save(UserData $request): JsonResponse
+    public function update(UserData $request): JsonResponse
     {
         $data = $request->validated();
         $user = User::find(auth()->user()->id);
@@ -152,7 +250,7 @@ class UserController extends Controller
      */
     public function getList(Request $request): JsonResponse
     {
-        $users = User::with(['profile']);
+        $users = User::with(['profile','company']);
         $users = $users->paginate(10);
         return response()->json($users);
     }

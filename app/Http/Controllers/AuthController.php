@@ -42,6 +42,7 @@ class AuthController extends Controller
                 break;
         }
 
+        $credentials['is_active'] = 1;
 
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -77,9 +78,9 @@ class AuthController extends Controller
 
     public function registration(Request $request)
     {
-        $data = $request->all();
-
         $user = new User();
+        $user->type = 'customer';
+        $user->client_id = 1;
         $user->login_type = $request->get('login_type');
         $user->email = $request->get('email');
         $user->phone = $request->get('phone');

@@ -40,12 +40,23 @@ class Application extends Model
         'estimationYear',
         'estimationQuater',
         'power',
-        'energoCompanyName',
+        'vendor_id',
         'pricing',
         'other',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function ($application) {
+            $application->client_id = auth()->user()->client_id;
+        });
+    }
+
     public function user() {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function vendor() {
+        return $this->belongsTo(Vendor::class);
     }
 }
