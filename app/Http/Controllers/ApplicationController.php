@@ -46,6 +46,10 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * @param $applicationId
+     * @return JsonResponse
+     */
     public function getApplication($applicationId): JsonResponse
     {
         $application = Application::find($applicationId);
