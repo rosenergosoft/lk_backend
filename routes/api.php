@@ -63,5 +63,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::get('getByType/{group}/{type}',[DisclosureController::class,'getByType']);
         Route::get('getList/{group}',[DisclosureController::class,'getList']);
         Route::post('fileUpload',[DisclosureController::class,'fileUpload']);
+        Route::post('save',[DisclosureController::class,'save']);
+        Route::post('fileDelete',[DisclosureController::class,'fileDelete']);
     });
 });

@@ -52,7 +52,11 @@ class DisclosureController extends Controller
      */
     public function getList($group): JsonResponse
     {
-        $list = DisclosureList::where("group", $group)->get();
+        $list = DisclosureList::select('disclosure_list.*', 'disclosure.is_processed')
+            ->where("disclosure_list.group", $group)
+            ->leftJoin("disclosure", 'disclosure.disclosure_label_id', '=', 'disclosure_list.id')
+            ->orderBy('disclosure_list.id')
+            ->get();
         if ($list) {
             return response()->json([
                 'disclosures' => $list
@@ -78,16 +82,15 @@ class DisclosureController extends Controller
                 $filePath = $file->storeAs('uploads', $filename,'public');
                 $document->file = $filePath;
                 $document->original_name = $file->getClientOriginalName();
-                $documentDate = Carbon::parse(Request()->get('document_date'), 'GMT');
-                $document->document_date = $documentDate->toDateTimeString();
-                $document->name = Request()->get('name');
+                if(Request()->get('document_date')) $document->document_date = Carbon::parse(Request()->get('document_date'), 'GMT')->toDateTimeString();
+                else $document->document_date = '';
+                $document->name = Request()->get('name') ?? '';
                 if($Request->get('disclosure_id')) {
                     $disclosureId = $Request->get('disclosure_id');
                 }
                 if (isset($disclosureId)) {
                     $document->disclosure_id = $disclosureId;
-                    $disclosure = new \StdClass;
-                    $disclosure->id = $disclosureId;
+                    $disclosure = Disclosure::find($disclosureId);
                 } else {
                     if($disclosureLabelId = $Request->get('disclosure_label_id')) {
                         $disclosure = new Disclosure();
@@ -105,13 +108,65 @@ class DisclosureController extends Controller
                     }
                 }
                 $document->save();
-                $docs[] = $document;
             }
             return response()->json([
-                'docs' => $docs,
+                'success' => true,
+                'docs' => $disclosure->docs,
                 'disclosure' => $disclosure
             ]);
         }
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function save(Request $request) {
+        $data = $request->all();
+        $disclosure = Disclosure::updateOrCreate(
+            ['id' => @$data['disclosure_id']],
+            [
+                'content' => $data['content'] ?? '',
+                'disclosure_label_id' => $data['disclosure_label_id'],
+                'is_processed' => intval($data['is_processed']),
+                'is_show' => intval($data['is_show']),
+                'group_by' => intval($data['group_by']),
+                'user_id' => auth()->user()->id,
+            ]
+        );
+        if($data['docs']) {
+            $disclosure->docs()->delete();
+            foreach ($data['docs'] as $doc) {
+                unset($doc['created_at']);
+                unset($doc['updated_at']);
+                if(!$doc['name']) $doc['name'] = '';
+                if(!$doc['document_date']) $doc['document_date'] = '';
+                $disclosure->docs()->insert($doc);
+            }
+        }
+        if($disclosure) {
+            return response()->json([
+                'success' => true,
+                'disclosure' => $disclosure
+            ]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Disclosure can\'t be saved']);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function fileDelete(Request $request): JsonResponse
+    {
+        $doc = DisclosureDocs::find($request->get('doc_id'));
+        if($doc->disclosure_id == $request->get('disclosure_id')) {
+            $doc->delete();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'You don\'t have enough permissions for this action']);
+        }
     }
 }
