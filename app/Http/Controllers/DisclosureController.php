@@ -52,7 +52,11 @@ class DisclosureController extends Controller
      */
     public function getList($group): JsonResponse
     {
-        $list = DisclosureList::where("group", $group)->get();
+        $list = DisclosureList::select('disclosure_list.*', 'disclosure.is_processed')
+            ->where("disclosure_list.group", $group)
+            ->leftJoin("disclosure", 'disclosure.disclosure_label_id', '=', 'disclosure_list.id')
+            ->orderBy('disclosure_list.id')
+            ->get();
         if ($list) {
             return response()->json([
                 'disclosures' => $list
@@ -78,9 +82,9 @@ class DisclosureController extends Controller
                 $filePath = $file->storeAs('uploads', $filename,'public');
                 $document->file = $filePath;
                 $document->original_name = $file->getClientOriginalName();
-                $documentDate = Carbon::parse(Request()->get('document_date'), 'GMT');
-                $document->document_date = $documentDate->toDateTimeString();
-                $document->name = Request()->get('name');
+                if(Request()->get('document_date')) $document->document_date = Carbon::parse(Request()->get('document_date'), 'GMT')->toDateTimeString();
+                else $document->document_date = '';
+                $document->name = Request()->get('name') ?? '';
                 if($Request->get('disclosure_id')) {
                     $disclosureId = $Request->get('disclosure_id');
                 }
@@ -136,6 +140,8 @@ class DisclosureController extends Controller
             foreach ($data['docs'] as $doc) {
                 unset($doc['created_at']);
                 unset($doc['updated_at']);
+                if(!$doc['name']) $doc['name'] = '';
+                if(!$doc['document_date']) $doc['document_date'] = '';
                 $disclosure->docs()->insert($doc);
             }
         }
