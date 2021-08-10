@@ -135,7 +135,7 @@ class DisclosureController extends Controller
                 'user_id' => auth()->user()->id,
             ]
         );
-        if($data['docs']) {
+        if(isset($data['docs'])) {
             $disclosure->docs()->delete();
             foreach ($data['docs'] as $doc) {
                 unset($doc['created_at']);
