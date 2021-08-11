@@ -89,6 +89,7 @@ class AuthController extends Controller
         $user->ogrn = $request->get('ogrn');
         $user->ogrnip = $request->get('ogrnip');
         $user->password = bcrypt($request->get('password'));
+        $user->is_active = 1;
 
         $user->save();
         $name = explode(' ',$request->get('name'));
