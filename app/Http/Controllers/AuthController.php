@@ -94,9 +94,9 @@ class AuthController extends Controller
         $user->save();
         $name = explode(' ',$request->get('name'));
         $user->profile()->create([
-            'first_name' => $name[1],
-            'last_name' => $name[0],
-            'middle_name' => $name[2],
+            'first_name' => $name[1] ?? '',
+            'last_name' => $name[0] ?? '',
+            'middle_name' => $name[2] ?? '',
             'account' => $request->get('account')
         ]);
 
