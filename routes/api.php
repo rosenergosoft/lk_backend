@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\DisclosureController;
+use App\Http\Controllers\AppealsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,14 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::get('get/{id}',[ApplicationController::class,'getApplication']);
         Route::post('draft',[ApplicationController::class,'draft']);
         Route::post('create',[ApplicationController::class,'create']);
+    });
+
+    Route::group(['prefix' => 'appeals'], function () {
+        Route::get('list',[AppealsController::class,'list']);
+        Route::get('draft',[AppealsController::class,'getDraft']);
+        Route::get('get/{id}',[AppealsController::class,'getAppeal']);
+        Route::post('draft',[AppealsController::class,'draft']);
+        Route::post('create',[AppealsController::class,'create']);
     });
 
     Route::group(['prefix' => 'disclosure'], function () {
