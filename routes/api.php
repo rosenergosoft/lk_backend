@@ -64,8 +64,12 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::get('list',[AppealsController::class,'list']);
         Route::get('draft',[AppealsController::class,'getDraft']);
         Route::get('get/{id}',[AppealsController::class,'getAppeal']);
+        Route::get('getDocs/{id}',[AppealsController::class,'getDocs']);
         Route::post('draft',[AppealsController::class,'draft']);
         Route::post('create',[AppealsController::class,'create']);
+        Route::post('fileUpload',[AppealsController::class,'fileUpload']);
+        Route::post('fileDelete',[AppealsController::class,'fileDelete']);
+
     });
 
     Route::group(['prefix' => 'disclosure'], function () {
