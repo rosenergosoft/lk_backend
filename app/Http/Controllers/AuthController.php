@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -78,6 +79,7 @@ class AuthController extends Controller
 
     public function registration(Request $request)
     {
+        $role = Role::findByName('customer');
         $user = new User();
         $user->type = 'customer';
         $user->client_id = 1;
@@ -90,6 +92,10 @@ class AuthController extends Controller
         $user->ogrnip = $request->get('ogrnip');
         $user->password = bcrypt($request->get('password'));
         $user->is_active = 1;
+
+        $user->assignRole($role);
+        $permissions = $role->permissions->pluck('name');
+        $user->syncPermissions($permissions);
 
         $user->save();
         $name = explode(' ',$request->get('name'));
