@@ -16,11 +16,14 @@ class ApplicationController extends Controller
 
         if (in_array('admin',$roles)){
             $list = Application::with(['user.profile','user.company','vendor'])->where('client_id',$user->client_id);
+            $list = $this->filter($list,$request->all());
             $list = $list->paginate(10);
         }
 
         if (in_array('super',$roles)) {
-            $list = Application::with(['user.profile','user.company','vendor'])->paginate(10);
+            $list = Application::with(['user.profile','user.company','vendor']);
+            $list = $this->filter($list,$request->all());
+            $list = $list->paginate(10);
         }
 
         return response()->json($list);
@@ -139,5 +142,28 @@ class ApplicationController extends Controller
             'error' => 'true',
             'message' => 'Missed id parameter'
         ]);
+    }
+
+    protected function filter($model, $params)
+    {
+        if (isset($params['status']) && $params['status'] !== 'all') {
+            $model->where('status', $params['status']);
+        }
+
+        if (isset($params['query'])) {
+            $model->whereHas('user.profile', function ($query) use($params) {
+                $query->where('first_name','like','%'.$params['query'].'%')
+                    ->orWhere('last_name','like','%'.$params['query'].'%')
+                    ->orWhere('middle_name','like','%'.$params['query'].'%');
+            })
+            ->orWhereHas('user.company', function ($query) use($params) {
+                $query->where('name','like','%'.$params['query'].'%');
+            })
+            ->orWhereHas('vendor', function ($query) use($params) {
+                $query->where('name','like','%'.$params['query'].'%');
+            });
+        }
+
+        return $model;
     }
 }

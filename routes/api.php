@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -49,6 +50,10 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::get('list',[UserController::class,'getList']);
         Route::get('{id}',[UserController::class,'getUser']);
         Route::post('save',[UserController::class,'save']);
+    });
+
+    Route::group(['prefix' => 'vendor'], function () {
+        Route::get('/list',[VendorController::class, 'list']);
     });
 
     Route::group(['prefix' => 'application'], function () {
