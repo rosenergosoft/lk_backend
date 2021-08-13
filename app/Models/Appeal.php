@@ -13,7 +13,7 @@ class Appeal extends Model
 
     const STATUS_DRAFT = 'draft'; // черновик
     const STATUS_ACCEPTED = 'accepted'; // в работе
-    const STATUS_WAITING_ADMIN_RESPONSE = 'replied'; // ожидает ответа админа
+    const STATUS_WAITING_ADMIN_RESPONSE = 'replied'; // ожидает ответа пользователя
     const STATUS_COMPLETED = 'completed'; // выполнен
 
     protected $fillable = [

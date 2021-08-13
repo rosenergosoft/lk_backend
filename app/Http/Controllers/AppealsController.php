@@ -73,8 +73,15 @@ class AppealsController extends Controller
         ]);
     }
 
-    public function list() {
+    public function list(Request $request)
+    {
+        $user = auth()->user();
+        $roles = $user->getRoleNames()->toArray();
 
+        if(in_array('customer', $roles)) {
+            $list = Appeal::where('user_id', $user->id)->paginate();
+        }
+        return response()->json($list);
     }
 
     /**

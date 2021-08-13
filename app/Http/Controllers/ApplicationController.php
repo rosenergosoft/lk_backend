@@ -13,7 +13,7 @@ class ApplicationController extends Controller
     {
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray();
-
+        $list = '';
         if (in_array('admin',$roles)){
             $list = Application::with(['user.profile','user.company','vendor'])->where('client_id',$user->client_id);
             $list = $list->paginate(10);
