@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appeal;
+use App\Models\AppealDocs;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Str;
 use Psy\Util\Json;
 
 class AppealsController extends Controller
@@ -47,6 +49,10 @@ class AppealsController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function create(Request $request): JsonResponse
     {
         $data = $request->all();
@@ -71,6 +77,10 @@ class AppealsController extends Controller
 
     }
 
+    /**
+     * @param $appealId
+     * @return JsonResponse
+     */
     public function getAppeal($appealId): JsonResponse
     {
         $appeal = Appeal::find($appealId);
@@ -84,6 +94,74 @@ class AppealsController extends Controller
             return response()->json([
                 'message' => 'No appeal found with this id'
             ]);
+        }
+    }
+
+    /**
+     * @param Request $Request
+     * @return JsonResponse
+     */
+    public function fileUpload (Request $Request): JsonResponse
+    {
+        if ($Request->file()){
+            foreach ($Request->file() as $type => $file) {
+                $path_parts = pathinfo($file->getClientOriginalName());
+                $document = new AppealDocs();
+                $filename = Str::random(40).'.'.$path_parts['extension'];
+                $filePath = $file->storeAs('uploads', $filename,'public');
+                $document->file = $filePath;
+                $document->original_name = $file->getClientOriginalName();
+                $document->user_id = Auth()->user()->id;
+                if($appealId = $Request->get('appeal_id')) {
+                    $appeal = Appeal::find($appealId);
+                    $document->appeal_id = $appealId;
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Error']);
+                }
+
+                $document->save();
+            }
+            return response()->json([
+                'success' => true,
+                'docs' => $appeal->docs,
+                'appeal' => $appeal
+            ]);
+        }
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * @param $appealId
+     * @return JsonResponse
+     */
+    public function getDocs($appealId): JsonResponse
+    {
+        $docs = AppealDocs::where('appeal_id', $appealId)->get();
+        if($docs) {
+            return response()->json([
+                'success' => true,
+                'docs' => $docs
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'There\'s no docs for this appeal'
+            ]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function fileDelete(Request $request): JsonResponse
+    {
+        $doc = AppealDocs::find($request->get('doc_id'));
+        if($doc->appeal_id == $request->get('appeal_id') && $doc->user_id == Auth()->user()->id) {
+            $doc->delete();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'You don\'t have enough permissions for this action']);
         }
     }
 }
