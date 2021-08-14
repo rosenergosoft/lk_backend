@@ -139,25 +139,20 @@ class UserController extends Controller
         switch ($data['login_type']) {
             case User::LOGIN_TYPE_PHYS:
                 $user->snils = $data['snils'];
-                $user->email = $data['email'];
-                $user->phone = $data['phone'];
                 break;
             case User::LOGIN_TYPE_YUR:
                 $user->ogrn = $data['ogrn'];
-                $user->email = $data['email'];
-                $user->phone = $data['phone'];
                 break;
             case User::LOGIN_TYPE_IP:
                 $user->ogrnip = $data['ogrnip'];
-                $user->email = $data['email'];
-                $user->phone = $data['phone'];
                 break;
             case User::LOGIN_TYPE_EMAIl:
             default:
-                $user->email = $data['email'];
-                $user->phone = $data['phone'];
+
                 break;
         }
+        $user->email = $data['email'];
+        $user->phone = $data['phone'];
 
         try {
             $user->save();

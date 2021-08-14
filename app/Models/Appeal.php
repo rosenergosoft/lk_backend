@@ -13,7 +13,7 @@ class Appeal extends Model
 
     const STATUS_DRAFT = 'draft'; // черновик
     const STATUS_ACCEPTED = 'accepted'; // в работе
-    const STATUS_WAITING_ADMIN_RESPONSE = 'replied'; // ожидает ответа пользователя
+    const STATUS_WAITING_USER_RESPONSE = 'replied'; // ожидает ответа пользователя
     const STATUS_COMPLETED = 'completed'; // выполнен
 
     protected $fillable = [
@@ -31,5 +31,10 @@ class Appeal extends Model
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(AppealMessages::class, 'appeal_id', 'id');
     }
 }

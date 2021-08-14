@@ -9,6 +9,10 @@ use Psy\Util\Json;
 
 class ApplicationController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function list(Request $request)
     {
         $user = auth()->user();
@@ -29,6 +33,10 @@ class ApplicationController extends Controller
         return response()->json($list);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function getCounts(Request $request): JsonResponse
     {
         $user = auth()->user();
@@ -63,6 +71,7 @@ class ApplicationController extends Controller
             'counts' => $count
         ]);
     }
+
     /**
      * @return JsonResponse
      */
@@ -144,6 +153,11 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * @param $model
+     * @param $params
+     * @return mixed
+     */
     protected function filter($model, $params)
     {
         if (isset($params['status']) && $params['status'] !== 'all') {

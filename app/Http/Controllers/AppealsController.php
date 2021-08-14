@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appeal;
 use App\Models\AppealDocs;
+use App\Models\AppealMessages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -73,7 +74,85 @@ class AppealsController extends Controller
         ]);
     }
 
-    public function list(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendMessage(Request $request): JsonResponse
+    {
+        if($appeal_id = $request->get('appeal_id')) {
+            $message = new AppealMessages();
+            $message->appeal_id = $appeal_id;
+            $message->user_id = auth()->user()->id;
+            if($messageText = $request->get('message')) {
+                $message->message = $messageText;
+                $message->save();
+                return response()->json([
+                    'success' => 'true',
+                    'messages' => AppealMessages::where('appeal_id', $appeal_id)->get(),
+                    'message' => 'Сообщение отправлено'
+                ]);
+            }
+        }
+        return response()->json([
+            'error' => 'false',
+            'message' => 'Ошибка'
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeStatus (Request $request): JsonResponse
+    {
+        if($appealId = $request->get('appeal_id')) {
+            $appeal = Appeal::find($appealId);
+//            $user = auth()->user();
+//            $roles = $user->getRoleNames()->toArray();
+//            if(in_array('admin', $roles)) {
+//                $appeal->status = $request->get('status')->save();
+//            }
+            $appeal->status = $request->get('status');
+            $appeal->save();
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Статус сохранен'
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'true',
+                'message' => 'Статус не сохранен'
+            ]);
+        }
+    }
+
+    /**
+     * @param $appealId
+     * @return JsonResponse
+     */
+    public function getMessages($appealId): JsonResponse
+    {
+        $appeal = Appeal::find($appealId);
+        if($appeal) {
+            $messages = $appeal->messages()->with('userProfile')->get();
+            return response()->json([
+                'success' => 'true',
+                'messages' => $messages
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'true',
+                'message' => 'Ошибка'
+            ]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function list(Request $request): JsonResponse
     {
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray();
@@ -170,5 +249,16 @@ class AppealsController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'You don\'t have enough permissions for this action']);
         }
+    }
+
+    public function downloadFile ($fileId) {
+        $doc = AppealDocs::find($fileId);
+        if($doc->user_id == Auth()->user()->id) {
+            $file = public_path('storage/' . $doc->file);
+            return response()->make(file_get_contents($file), 200, [
+                'Content-type: ' . mime_content_type($file),
+                'Content-Disposition: attachment; filename=' . $doc->original_name
+            ]);
+        } else return '';
     }
 }
