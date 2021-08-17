@@ -39,8 +39,8 @@ class TechnicalCommand extends Command
      */
     public function handle()
     {
-        $user = User::find(1);
-        $role = Role::where('name','super')->first();
+        $user = User::find(2);
+        $role = Role::where('name','admin')->first();
         $user->assignRole($role);
         $permissions = $role->permissions->pluck('name');
         $user->syncPermissions($permissions);

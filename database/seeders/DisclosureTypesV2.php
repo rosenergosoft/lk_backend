@@ -16,7 +16,9 @@ class DisclosureTypesV2 extends Seeder
      */
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table($this->table)->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $data[] = [
             'type' => '0',
             'type_label' => '*',
