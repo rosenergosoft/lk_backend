@@ -159,8 +159,17 @@ class AppealsController extends Controller
 
         if(in_array('customer', $roles)) {
             $list = Appeal::where('user_id', $user->id)->paginate();
+        } else if(in_array(['admin', 'vendor', 'super'], $roles)) {
+            $list = Appeal::paginate(); //todo: добавить фильтрацию по компании
         }
-        return response()->json($list);
+        if(isset($list)) {
+            return response()->json($list);
+        } else {
+            return response()->json([
+                'message' => 'No appeals found'
+            ]);
+        }
+
     }
 
     /**

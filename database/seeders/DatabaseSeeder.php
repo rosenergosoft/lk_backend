@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DisclosureTypesV2::class,
             RolesSeeder::class,
+            AdditionalDisclosures::class
         ]);
     }
 }
