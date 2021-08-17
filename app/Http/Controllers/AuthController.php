@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -49,6 +50,15 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        $user = \auth()->user();
+        if (!$user->hasRole('super')){
+            $host = parse_url(\request()->headers->get('origin'));
+            $client = Client::where('host',$host['host'])->first();
+            if (!$client || $user->client_id !== $client->id){
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+        }
+
         return $this->respondWithToken($token);
     }
 
@@ -79,34 +89,46 @@ class AuthController extends Controller
 
     public function registration(Request $request)
     {
-        $role = Role::findByName('customer');
-        $user = new User();
-        $user->type = 'customer';
-        $user->client_id = 1;
-        $user->login_type = $request->get('login_type');
-        $user->email = $request->get('email');
-        $user->phone = $request->get('phone');
-        $user->name = $request->get('name');
-        $user->snils = $request->get('snils');
-        $user->ogrn = $request->get('ogrn');
-        $user->ogrnip = $request->get('ogrnip');
-        $user->password = bcrypt($request->get('password'));
-        $user->is_active = 1;
+        $host = $request->get('host');
+        if ($host){
+            $client = Client::where('host',$host)->first();
+            if ($client){
+                $user = new User();
+                $user->type = 'customer';
+                $user->client_id = $client->id;
+                $user->login_type = $request->get('login_type');
+                $user->email = $request->get('email');
+                $user->phone = $request->get('phone');
+                $user->name = $request->get('name');
+                $user->snils = $request->get('snils');
+                $user->ogrn = $request->get('ogrn');
+                $user->ogrnip = $request->get('ogrnip');
+                $user->password = bcrypt($request->get('password'));
+                $user->is_active = 1;
 
-        $user->assignRole($role);
-        $permissions = $role->permissions->pluck('name');
-        $user->syncPermissions($permissions);
+                $user->save();
+                $user->setPermissionsToUser('customer');
+                $name = explode(' ',$request->get('name'));
+                $user->profile()->create([
+                    'first_name' => $name[1] ?? '',
+                    'last_name' => $name[0] ?? '',
+                    'middle_name' => $name[2] ?? '',
+                    'account' => $request->get('account')
+                ]);
 
-        $user->save();
-        $name = explode(' ',$request->get('name'));
-        $user->profile()->create([
-            'first_name' => $name[1] ?? '',
-            'last_name' => $name[0] ?? '',
-            'middle_name' => $name[2] ?? '',
-            'account' => $request->get('account')
+                return response()->json(['success' => true]);
+            } else {
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Client not found'
+                ]);
+            }
+        }
+
+        return response()->json([
+            'error' => true,
+            'message' => 'Host is required'
         ]);
-
-        return response()->json(['success']);
     }
 
     /**

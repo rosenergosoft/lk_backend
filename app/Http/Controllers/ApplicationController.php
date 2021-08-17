@@ -24,12 +24,8 @@ class ApplicationController extends Controller
             $list = $list->with(['user.profile','user.company','vendor'])->where('user_id',$user->id);
         }
 
-        if (in_array('admin',$roles)){
+        if (in_array('admin',$roles) || in_array('super',$roles)){
             $list = $list->with(['user.profile','user.company','vendor']);
-        }
-
-        if (in_array('super',$roles)) {
-            $list = $list->withoutGlobalScope(ClientScope::class)->with(['user.profile','user.company','vendor']);
         }
 
         $list = $this->filter($list,$request->all());

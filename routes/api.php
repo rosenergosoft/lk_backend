@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,10 @@ Route::group([
 Route::post('registration',[AuthController::class,'registration']);
 
 Route::group(['middleware' => ['api','active']],function ($router) {
+    Route::group(['prefix' => 'client'], function () {
+        Route::get('/list',[ClientController::class,'list']);
+        Route::post('/switch',[ClientController::class,'switchClient']);
+    });
     Route::group(['prefix' => 'user'], function () {
         Route::post('/',[UserController::class,'update']);
         Route::post('profile',[UserController::class,'saveProfile']);
