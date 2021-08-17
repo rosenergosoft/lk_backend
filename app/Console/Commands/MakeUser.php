@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Spatie\Permission\Models\Role;
@@ -24,6 +25,8 @@ class MakeUser extends Command
 
     protected $rolesMap = [];
 
+    protected $clients = [];
+
     /**
      * Create a new command instance.
      *
@@ -42,6 +45,7 @@ class MakeUser extends Command
     public function handle()
     {
         $this->rolesMap = Role::all()->pluck('name', 'id')->toArray();
+        $this->clients = Client::all()->pluck('name','id')->toArray();
 
         do {
             $details  = $this->askForUserDetails($details ?? null);
@@ -49,9 +53,11 @@ class MakeUser extends Command
             $email    = $details['email'];
             $password = $details['password'];
             $role     = $details['role'];
+            $client   = $details['client'];
         } while (!$this->confirm("Create user {$name} <{$email}>?", true));
+        $clientId = array_search($client, $this->clients);
         $role = array_search($role, $this->rolesMap);
-        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password), 'client_id' => '0', 'type' => User::LOGIN_TYPE_EMAIl, 'is_active' => 1]);
+        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password), 'client_id' => $clientId, 'type' => User::LOGIN_TYPE_EMAIl, 'is_active' => 1]);
         $user->assignRole($this->rolesMap[$role]);
         $permissions = Role::findById($role)->permissions->pluck('name');
         $user->syncPermissions($permissions);
@@ -67,9 +73,10 @@ class MakeUser extends Command
         $name     = $this->ask('Full name of user?', $defaults['name'] ?? null);
         $email    = $this->askUniqueEmail('Email Address for user?', $defaults['email'] ?? null);
         $password = $this->ask('Password for user? (will be visible)', $defaults['password'] ?? null);
+        $client     = $this->choice('For which client this user belongs to?', $this->clients, $defaults['client'] ?? null);
         $role     = $this->choice('Which role should this user have?', $this->rolesMap, $defaults['role'] ?? null);
 
-        return compact('name', 'email', 'password', 'role');
+        return compact('name', 'email', 'password', 'role', 'client');
     }
 
     /**
