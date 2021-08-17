@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\Permission\Models\Role;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -113,5 +114,15 @@ class User extends Authenticatable implements JWTSubject
             'company',
             'vendor'
         ]);
+    }
+
+    /**
+     * @param $roleName
+     */
+    public function setPermissionsToUser($roleName) {
+        $role = Role::where('name',$roleName)->first();
+        $this->assignRole($role);
+        $permissions = $role->permissions->pluck('name');
+        $this->syncPermissions($permissions);
     }
 }

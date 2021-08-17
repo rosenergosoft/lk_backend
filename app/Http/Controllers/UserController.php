@@ -45,6 +45,7 @@ class UserController extends Controller
                     }
                     $user->name = $data['vendor_name'];
                     $user->save();
+                    $user->setPermissionsToUser($data['type']);
                     $vendor = $user->vendor;
                     $vendor->name = $data['vendor_name'];
                     $vendor->save();
@@ -59,10 +60,7 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                     $user->save();
 
-                    $role = Role::findByName('vendor');
-                    $user->assignRole($role);
-                    $permissions = $role->permissions->pluck('name');
-                    $user->syncPermissions($permissions);
+                    $user->setPermissionsToUser($data['type']);
 
                     $vendor = new Vendor();
                     $vendor->user_id = $user->id;
@@ -96,10 +94,8 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
-                $role = Role::findByName('customer');
-                $user->assignRole($role);
-                $permissions = $role->permissions->pluck('name');
-                $user->syncPermissions($permissions);
+                $user->setPermissionsToUser($data['type']);
+
                 return response()->json([
                     'success' => true
                 ]);
@@ -117,10 +113,7 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
-                $role = Role::findByName('admin');
-                $user->assignRole($role);
-                $permissions = $role->permissions->pluck('name');
-                $user->syncPermissions($permissions);
+                $user->setPermissionsToUser($data['type']);
                 return response()->json([
                     'success' => true
                 ]);
