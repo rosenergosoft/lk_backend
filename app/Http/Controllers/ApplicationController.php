@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Scopes\ClientScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Psy\Util\Json;
@@ -17,18 +18,22 @@ class ApplicationController extends Controller
     {
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray();
-        $list = '';
+        $list = new Application();
+
+        if (in_array('customer',$roles)) {
+            $list = $list->with(['user.profile','user.company','vendor'])->where('user_id',$user->id);
+        }
+
         if (in_array('admin',$roles)){
-            $list = Application::with(['user.profile','user.company','vendor'])->where('client_id',$user->client_id);
-            $list = $this->filter($list,$request->all());
-            $list = $list->paginate(10);
+            $list = $list->with(['user.profile','user.company','vendor']);
         }
 
         if (in_array('super',$roles)) {
-            $list = Application::with(['user.profile','user.company','vendor']);
-            $list = $this->filter($list,$request->all());
-            $list = $list->paginate(10);
+            $list = $list->withoutGlobalScope(ClientScope::class)->with(['user.profile','user.company','vendor']);
         }
+
+        $list = $this->filter($list,$request->all());
+        $list = $list->paginate(10);
 
         return response()->json($list);
     }
@@ -42,7 +47,7 @@ class ApplicationController extends Controller
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray();
 
-        if (in_array('super',$roles)) {
+        if (in_array('super',$roles) || in_array('admin',$roles)) {
             $count = [
                 Application::STATUS_ACCEPTED => Application::where('status',Application::STATUS_ACCEPTED)->count(),
                 Application::STATUS_COMPLETED => Application::where('status',Application::STATUS_COMPLETED)->count(),
@@ -51,18 +56,6 @@ class ApplicationController extends Controller
                 Application::STATUS_WAITING_COMPANY_RESPONSE => Application::where('status',Application::STATUS_WAITING_COMPANY_RESPONSE)->count(),
                 Application::STATUS_PROGRESS_INVOICE => Application::where('status',Application::STATUS_PROGRESS_INVOICE)->count(),
                 Application::STATUS_PROGRESS_PREPARING => Application::where('status',Application::STATUS_PROGRESS_PREPARING)->count(),
-            ];
-        }
-
-        if (in_array('admin',$roles)) {
-            $count = [
-                Application::STATUS_ACCEPTED => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_ACCEPTED)->count(),
-                Application::STATUS_COMPLETED => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_COMPLETED)->count(),
-                Application::STATUS_IN_PROGRESS => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_IN_PROGRESS)->count(),
-                Application::STATUS_DECLINED => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_DECLINED)->count(),
-                Application::STATUS_WAITING_COMPANY_RESPONSE => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_WAITING_COMPANY_RESPONSE)->count(),
-                Application::STATUS_PROGRESS_INVOICE => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_PROGRESS_INVOICE)->count(),
-                Application::STATUS_PROGRESS_PREPARING => Application::where('client_id',$user->client_id)->where('status',Application::STATUS_PROGRESS_PREPARING)->count(),
             ];
         }
 

@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -58,7 +59,9 @@ class UserController extends Controller
                     $user->email = $data['email'];
                     $user->password = bcrypt($data['password']);
                     $user->save();
+
                     $user->setPermissionsToUser($data['type']);
+
                     $vendor = new Vendor();
                     $vendor->user_id = $user->id;
                     $vendor->client_id = auth()->user()->client_id;
@@ -92,6 +95,7 @@ class UserController extends Controller
                 }
                 $user->save();
                 $user->setPermissionsToUser($data['type']);
+
                 return response()->json([
                     'success' => true
                 ]);
@@ -248,7 +252,7 @@ class UserController extends Controller
      */
     public function getList(Request $request): JsonResponse
     {
-        $users = User::with(['profile','company']);
+        $users = User::with(['profile','company'])->where('client_id',auth()->user()->client_id);
         $users = $users->paginate(10);
         return response()->json($users);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\ClientScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -47,6 +48,7 @@ class Application extends Model
 
     protected static function booted()
     {
+        static::addGlobalScope(new ClientScope());
         static::saving(function ($application) {
             $application->client_id = auth()->user()->client_id;
         });
