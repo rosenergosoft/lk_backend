@@ -44,6 +44,7 @@ class UserController extends Controller
                     }
                     $user->name = $data['vendor_name'];
                     $user->save();
+                    $user->setPermissionsToUser($data['type']);
                     $vendor = $user->vendor;
                     $vendor->name = $data['vendor_name'];
                     $vendor->save();
@@ -57,7 +58,7 @@ class UserController extends Controller
                     $user->email = $data['email'];
                     $user->password = bcrypt($data['password']);
                     $user->save();
-
+                    $user->setPermissionsToUser($data['type']);
                     $vendor = new Vendor();
                     $vendor->user_id = $user->id;
                     $vendor->client_id = auth()->user()->client_id;
@@ -90,6 +91,7 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
+                $user->setPermissionsToUser($data['type']);
                 return response()->json([
                     'success' => true
                 ]);
@@ -107,6 +109,7 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
+                $user->setPermissionsToUser($data['type']);
                 return response()->json([
                     'success' => true
                 ]);
