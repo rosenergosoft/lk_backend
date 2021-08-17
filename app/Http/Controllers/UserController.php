@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -58,6 +59,11 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                     $user->save();
 
+                    $role = Role::findByName('vendor');
+                    $user->assignRole($role);
+                    $permissions = $role->permissions->pluck('name');
+                    $user->syncPermissions($permissions);
+
                     $vendor = new Vendor();
                     $vendor->user_id = $user->id;
                     $vendor->client_id = auth()->user()->client_id;
@@ -90,6 +96,10 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
+                $role = Role::findByName('customer');
+                $user->assignRole($role);
+                $permissions = $role->permissions->pluck('name');
+                $user->syncPermissions($permissions);
                 return response()->json([
                     'success' => true
                 ]);
@@ -107,6 +117,10 @@ class UserController extends Controller
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
+                $role = Role::findByName('admin');
+                $user->assignRole($role);
+                $permissions = $role->permissions->pluck('name');
+                $user->syncPermissions($permissions);
                 return response()->json([
                     'success' => true
                 ]);
@@ -245,7 +259,7 @@ class UserController extends Controller
      */
     public function getList(Request $request): JsonResponse
     {
-        $users = User::with(['profile','company']);
+        $users = User::with(['profile','company'])->where('client_id',auth()->user()->client_id);
         $users = $users->paginate(10);
         return response()->json($users);
     }
