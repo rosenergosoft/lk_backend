@@ -55,6 +55,8 @@ class RolesSeeder extends Seeder
                 'disclosure_list',
                 'disclosure_edit',
                 'settings',
+                'appeals_list',
+                'appeals_edit',
             ],
             'admin' => [
                 'myAccount_edit',
@@ -69,6 +71,8 @@ class RolesSeeder extends Seeder
                 'disclosure_list',
                 'disclosure_edit',
                 'settings',
+                'appeals_list',
+                'appeals_edit',
             ],
             'customer' => [
                 'myAccount_edit',
@@ -80,6 +84,9 @@ class RolesSeeder extends Seeder
                 'applications_list',
                 'requests_add',
                 'requests_list',
+                'appeals_add',
+                'appeals_list',
+                'appeals_edit',
             ],
             'vendor' => [
                 'myAccount_edit',
@@ -87,6 +94,8 @@ class RolesSeeder extends Seeder
                 'applications_edit',
                 'requests_list',
                 'requests_edit',
+                'appeals_list',
+                'appeals_edit',
             ]
         ];
 
