@@ -14,7 +14,7 @@ class AddTypeColumnToClientsTable extends Migration
     public function up()
     {
         Schema::table('clients', function (Blueprint $table) {
-            $table->smallInteger('type')->after('host');
+            $table->string('type')->after('host');
         });
     }
 

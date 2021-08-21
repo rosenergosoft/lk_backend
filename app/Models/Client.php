@@ -13,4 +13,19 @@ class Client extends Model
     const TYPE_WARM = 2;
     const TYPE_WATER = 3;
     const TYPE_SEWERAGE = 4;
+
+    public function getTypeAttribute($value)
+    {
+        if ($value){
+            return explode(',',$value);
+        }
+        return [];
+    }
+
+    public function setTypeAttribute($value)
+    {
+        if (is_array($value)){
+            $this->attributes['type'] = implode(',',$value);
+        }
+    }
 }
