@@ -10,6 +10,23 @@ use Psy\Util\Json;
 
 class ApplicationController extends Controller
 {
+    public function changeStatus (Request $request): JsonResponse
+    {
+        if($applicationId = $request->get('application_id')) {
+            $application = Application::find($applicationId);
+            $application->status = $request->get('status');
+            $application->save();
+            return response()->json([
+                'success' => 'true',
+                'message' => 'Статус сохранен'
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'true',
+                'message' => 'Статус не сохранен'
+            ]);
+        }
+    }
     /**
      * @param Request $request
      * @return JsonResponse

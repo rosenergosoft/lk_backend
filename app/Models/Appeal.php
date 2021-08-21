@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\ClientScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,14 @@ class Appeal extends Model
         'requester',
         'question'
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new ClientScope());
+        static::saving(function ($appeal) {
+            $appeal->client_id = auth()->user()->client_id;
+        });
+    }
 
     public function docs (): HasMany
     {
