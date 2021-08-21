@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateFailedJobsTable extends Migration
 {
@@ -31,6 +32,8 @@ class CreateFailedJobsTable extends Migration
      */
     public function down()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Schema::dropIfExists('failed_jobs');
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 }
