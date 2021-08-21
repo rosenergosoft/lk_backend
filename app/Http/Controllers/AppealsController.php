@@ -87,10 +87,19 @@ class AppealsController extends Controller
             if($messageText = $request->get('message')) {
                 $message->message = $messageText;
                 $message->save();
+                $appeal = Appeal::find($appeal_id);
+                if(auth()->user()->type === 'customer') {
+                    $appeal->status = Appeal::STATUS_ACCEPTED;
+                } else {
+                    $appeal->status = Appeal::STATUS_WAITING_USER_RESPONSE;
+                }
+                $appeal->save();
+
                 return response()->json([
                     'success' => 'true',
-                    'messages' => AppealMessages::where('appeal_id', $appeal_id)->get(),
-                    'message' => 'Сообщение отправлено'
+                    'messages' => AppealMessages::with('userProfile')->where('appeal_id', $appeal_id)->get(),
+                    'message' => 'Сообщение отправлено',
+                    'appeal' => $appeal
                 ]);
             }
         }
@@ -135,7 +144,7 @@ class AppealsController extends Controller
     {
         $appeal = Appeal::find($appealId);
         if($appeal) {
-            $messages = $appeal->messages()->with('userProfile')->get();
+            $messages = $appeal->messages()->with(['userProfile'])->get();
             return response()->json([
                 'success' => 'true',
                 'messages' => $messages
@@ -156,11 +165,14 @@ class AppealsController extends Controller
     {
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray();
-
         if(in_array('customer', $roles)) {
             $list = Appeal::where('user_id', $user->id)->paginate();
-        } else if(in_array(['admin', 'vendor', 'super'], $roles)) {
-            $list = Appeal::paginate(); //todo: добавить фильтрацию по компании
+        } else if(
+            in_array('admin', $roles) ||
+            in_array('super', $roles) ||
+            in_array('vendor', $roles)
+        ) {
+            $list = Appeal::paginate();
         }
         if(isset($list)) {
             return response()->json($list);
