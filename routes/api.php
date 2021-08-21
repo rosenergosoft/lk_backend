@@ -68,6 +68,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::get('get/{id}',[ApplicationController::class,'getApplication']);
         Route::post('draft',[ApplicationController::class,'draft']);
         Route::post('create',[ApplicationController::class,'create']);
+        Route::post('changeStatus',[ApplicationController::class,'changeStatus']);
     });
 
     Route::group(['prefix' => 'appeals'], function () {
