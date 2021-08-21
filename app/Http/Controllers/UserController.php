@@ -33,14 +33,14 @@ class UserController extends Controller
 
     public function save(Request $request): JsonResponse
     {
-        $data = $request->all();
+        $data = $request->get('userData');
         switch ($data['type']){
             case 'vendor':
                 if (isset($data['id'])){
                     $user = User::find($data['id']);
                     $user->email = $data['email'];
                     $user->is_active = $data['is_active'];
-                    if ($data['password']){
+                    if (isset($data['password'])){
                         $user->password = bcrypt($data['password']);
                     }
                     $user->name = $data['vendor_name'];
@@ -90,10 +90,15 @@ class UserController extends Controller
                     $user->login_type = 'email';
                 }
                 $user->is_active = $data['is_active'];
-                if ($data['password']) {
+                if (isset($data['password'])) {
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
+                if ($request->get('userProfile')){
+                    $profile = $user->profile;
+                    $profile->update($request->get('userProfile'));
+                    $profile->save();
+                }
                 $user->setPermissionsToUser($data['type']);
 
                 return response()->json([
@@ -109,7 +114,7 @@ class UserController extends Controller
                 $user->type = 'admin';
                 $user->email = $data['email'];
                 $user->is_active = $data['is_active'];
-                if ($data['password']) {
+                if (isset($data['password'])) {
                     $user->password = bcrypt($data['password']);
                 }
                 $user->save();
@@ -288,7 +293,12 @@ class UserController extends Controller
             'phys' => [],
             'yur' => []
         ];
-        $documents = Documents::with(['signature'])->where('user_id', auth()->user()->id)->get();
+        if ($request->get('id')){
+            $userId = $request->get('id');
+        } else {
+            $userId = auth()->user()->id;
+        }
+        $documents = Documents::with(['signature'])->where('user_id', $userId)->get();
         foreach ($documents as $doc) {
             if ($doc->type === Documents::TYPE_PERSONAL_ID || $doc->type === Documents::TYPE_PROXY) {
                 $out['phys'][] = $doc;
