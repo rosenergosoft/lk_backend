@@ -89,9 +89,10 @@ class AuthController extends Controller
 
     public function registration(Request $request)
     {
-        $host = $request->get('host');
-        if ($host){
-            $client = Client::where('host',$host)->first();
+        $hostArr = parse_url(\request()->headers->get('origin'));
+        $host = $hostArr['host'];
+        if ($host) {
+            $client = Client::where('host', $host)->first();
             if ($client){
                 $user = new User();
                 $user->type = 'customer';

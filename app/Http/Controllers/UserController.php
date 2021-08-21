@@ -257,7 +257,9 @@ class UserController extends Controller
      */
     public function getList(Request $request): JsonResponse
     {
-        $users = User::with(['profile','company'])->where('client_id',auth()->user()->client_id);
+        $users = User::with(['profile','company'])
+            ->where('client_id',auth()->user()->client_id)
+            ->where('type', '<>', 'super');
         $users = $users->paginate(10);
         return response()->json($users);
     }
