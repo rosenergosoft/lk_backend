@@ -21,11 +21,11 @@ class ApplicationController extends Controller
         $list = new Application();
 
         if (in_array('customer',$roles)) {
-            $list = $list->with(['user.profile','user.company','vendor'])->where('user_id',$user->id);
+            $list = $list->with(['user.profile','user.company','vendor', 'client'])->where('user_id',$user->id);
         }
 
         if (in_array('admin',$roles) || in_array('super',$roles)){
-            $list = $list->with(['user.profile','user.company','vendor']);
+            $list = $list->with(['user.profile','user.company','vendor', 'client']);
         }
 
         $list = $this->filter($list,$request->all());
