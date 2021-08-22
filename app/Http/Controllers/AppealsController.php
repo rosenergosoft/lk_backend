@@ -172,7 +172,7 @@ class AppealsController extends Controller
             in_array('super', $roles) ||
             in_array('vendor', $roles)
         ) {
-            $list = Appeal::paginate();
+            $list = Appeal::where('status', '<>', Appeal::STATUS_DRAFT)->paginate();
         }
         if(isset($list)) {
             return response()->json($list);
