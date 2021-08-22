@@ -300,7 +300,7 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function getDocuments($id): JsonResponse
+    public function getDocuments($id = false): JsonResponse
     {
         $out = Documents::getAllPrepared($id);
         return response()->json([

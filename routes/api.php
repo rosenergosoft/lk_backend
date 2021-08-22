@@ -48,7 +48,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::post('company',[UserController::class,'saveCompany']);
         Route::delete('company',[UserController::class,'deleteCompany']);
         Route::post('documents',[UserController::class,'upload']);
-        Route::get('documents/{id}',[UserController::class,'getDocuments']);
+        Route::get('documents/{id?}',[UserController::class,'getDocuments']);
         Route::delete('documents',[UserController::class,'deleteDocument']);
         Route::get('document/sign',[UserController::class,'getDocumentForSign']);
         Route::post('document/sign',[UserController::class,'signDocument']);
