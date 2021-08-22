@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Documents;
 use App\Scopes\ClientScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -105,8 +106,10 @@ class ApplicationController extends Controller
             ->where('user_id', auth()->user()->id)
             ->first();
         if ($application){
+            $docs = Documents::getAllPrepared();
             return response()->json([
-                'id' => $application->id
+                'id' => $application->id,
+                'docs'  => $docs
             ]);
         }
 
@@ -144,7 +147,7 @@ class ApplicationController extends Controller
         $data = $request->all();
         if ($data['id']) {
             $application = Application::find($data['id']);
-            $data['status'] = Application::STATUS_ACCEPTED;
+            $data['status'] = Application::STATUS_WAITING_COMPANY_RESPONSE;
             $application->update($data);
 
             return response()->json([

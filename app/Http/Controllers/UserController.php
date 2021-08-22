@@ -289,23 +289,7 @@ class UserController extends Controller
 
     public function getDocuments(Request $request): JsonResponse
     {
-        $out = [
-            'phys' => [],
-            'yur' => []
-        ];
-        if ($request->get('id')){
-            $userId = $request->get('id');
-        } else {
-            $userId = auth()->user()->id;
-        }
-        $documents = Documents::with(['signature'])->where('user_id', $userId)->get();
-        foreach ($documents as $doc) {
-            if ($doc->type === Documents::TYPE_PERSONAL_ID || $doc->type === Documents::TYPE_PROXY) {
-                $out['phys'][] = $doc;
-            } else {
-                $out['yur'][] = $doc;
-            }
-        }
+        $out = Documents::getAllPrepared($request->get('id',null));
 
         return response()->json([
             'docs' => $out
