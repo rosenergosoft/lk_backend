@@ -37,6 +37,8 @@ Route::post('registration',[AuthController::class,'registration']);
 
 Route::group(['middleware' => ['api','active']],function ($router) {
     Route::group(['prefix' => 'client'], function () {
+        Route::get('/',[ClientController::class,'get']);
+        Route::post('/save',[ClientController::class,'save']);
         Route::get('/list',[ClientController::class,'list']);
         Route::post('/switch',[ClientController::class,'switchClient']);
     });

@@ -61,6 +61,8 @@ class ApplicationController extends Controller
         $user = auth()->user();
         $roles = $user->getRoleNames()->toArray();
 
+        $count = [];
+
         if (in_array('super',$roles) || in_array('admin',$roles)) {
             $count = [
                 Application::STATUS_ACCEPTED => Application::where('status',Application::STATUS_ACCEPTED)->count(),
@@ -70,6 +72,19 @@ class ApplicationController extends Controller
                 Application::STATUS_WAITING_COMPANY_RESPONSE => Application::where('status',Application::STATUS_WAITING_COMPANY_RESPONSE)->count(),
                 Application::STATUS_PROGRESS_INVOICE => Application::where('status',Application::STATUS_PROGRESS_INVOICE)->count(),
                 Application::STATUS_PROGRESS_PREPARING => Application::where('status',Application::STATUS_PROGRESS_PREPARING)->count(),
+            ];
+        }
+
+        if (in_array('vendor', $roles)) {
+            $vendorId = $user->vendor->id;
+            $count = [
+                Application::STATUS_ACCEPTED => Application::where('status',Application::STATUS_ACCEPTED)->where('vendor_id', $vendorId)->count(),
+                Application::STATUS_COMPLETED => Application::where('status',Application::STATUS_COMPLETED)->where('vendor_id', $vendorId)->count(),
+                Application::STATUS_IN_PROGRESS => Application::where('status',Application::STATUS_IN_PROGRESS)->where('vendor_id', $vendorId)->count(),
+                Application::STATUS_DECLINED => Application::where('status',Application::STATUS_DECLINED)->where('vendor_id', $vendorId)->count(),
+                Application::STATUS_WAITING_COMPANY_RESPONSE => Application::where('status',Application::STATUS_WAITING_COMPANY_RESPONSE)->where('vendor_id', $vendorId)->count(),
+                Application::STATUS_PROGRESS_INVOICE => Application::where('status',Application::STATUS_PROGRESS_INVOICE)->where('vendor_id', $vendorId)->count(),
+                Application::STATUS_PROGRESS_PREPARING => Application::where('status',Application::STATUS_PROGRESS_PREPARING)->where('vendor_id', $vendorId)->count(),
             ];
         }
 

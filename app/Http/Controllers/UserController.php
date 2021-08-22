@@ -39,6 +39,7 @@ class UserController extends Controller
                 if (isset($data['id'])){
                     $user = User::find($data['id']);
                     $user->email = $data['email'];
+                    $user->phone = $data['phone'];
                     $user->is_active = $data['is_active'];
                     if (isset($data['password'])){
                         $user->password = bcrypt($data['password']);
@@ -57,6 +58,7 @@ class UserController extends Controller
                     $user->is_active = $data['is_active'];
                     $user->name = $data['vendor_name'];
                     $user->email = $data['email'];
+                    $user->phone = $data['phone'] ?? null;
                     $user->password = bcrypt($data['password']);
                     $user->save();
 
@@ -80,12 +82,16 @@ class UserController extends Controller
                 $user->client_id = auth()->user()->client_id;
                 $user->type = 'customer';
                 $user->email = $data['email'];
-                if ($data['snils']){
+                $user->phone = $data['phone'] ?? null;
+                if (isset($data['snils'])){
                     $user->login_type = 'phys';
-                } elseif ($data['ogrn']) {
+                    $user->snils = $data['snils'];
+                } elseif (isset($data['ogrn'])) {
                     $user->login_type = 'yur';
-                } elseif ($data['ogrnip']) {
+                    $user->ogrn = $data['ogrn'];
+                } elseif (isset($data['ogrnip'])) {
                     $user->login_type = 'ip';
+                    $user->ogrnip = $data['ogrnip'];
                 } else {
                     $user->login_type = 'email';
                 }
@@ -96,8 +102,12 @@ class UserController extends Controller
                 $user->save();
                 if ($request->get('userProfile')){
                     $profile = $user->profile;
-                    $profile->update($request->get('userProfile'));
-                    $profile->save();
+                    if ($profile) {
+                        $profile->update($request->get('userProfile'));
+                        $profile->save();
+                    } else {
+                        $user->profile()->create($request->get('userProfile'));
+                    }
                 }
                 $user->setPermissionsToUser($data['type']);
 
@@ -113,6 +123,7 @@ class UserController extends Controller
                 $user->client_id = auth()->user()->client_id;
                 $user->type = 'admin';
                 $user->email = $data['email'];
+                $user->phone = $data['phone'] ?? null;
                 $user->is_active = $data['is_active'];
                 if (isset($data['password'])) {
                     $user->password = bcrypt($data['password']);

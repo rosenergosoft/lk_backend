@@ -9,6 +9,38 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
+    public function get(Request $request)
+    {
+        if (auth()->user()->hasRole('super')) {
+            $id = auth()->user()->client_id;
+            $client = Client::find($id);
+
+            return response()->json([
+                'success' => true,
+                'client' => $client
+            ]);
+        }
+
+        return response()->json(['error' => true, 'message' => "You don't have a permission for this"]);
+    }
+
+    public function save(Request $request)
+    {
+        if (auth()->user()->hasRole('super')) {
+            $id = auth()->user()->client_id;
+            $client = Client::find($id);
+            $client->type = $request->get('type');
+            $client->save();
+
+            return response()->json([
+                'success' => true,
+                'client' => $client
+            ]);
+        }
+
+        return response()->json(['error' => true, 'message' => "You don't have a permission for this"]);
+    }
+
     public function list(Request $request): JsonResponse
     {
 
