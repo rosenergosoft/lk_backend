@@ -51,7 +51,7 @@ class ApplicationController extends Controller
         }
 
         $list = $this->filter($list,$request->all());
-        $list = $list->paginate(10);
+        $list = $list->paginate($request->get('per_page',10));
 
         return response()->json($list);
     }

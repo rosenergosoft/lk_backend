@@ -273,7 +273,7 @@ class UserController extends Controller
         $users = User::with(['profile','company'])
             ->where('client_id',auth()->user()->client_id)
             ->where('type', '<>', 'super');
-        $users = $users->paginate(10);
+        $users = $users->paginate($request->get('per_page', 10));
         return response()->json($users);
     }
 
