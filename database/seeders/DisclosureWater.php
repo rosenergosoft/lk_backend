@@ -411,7 +411,7 @@ class DisclosureWater extends Seeder
             'type_label' => '21а',
             'group' => '2', // Водоснабжение
             'title' => 'О внесении изменений в инвестиционную программу',
-            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. ([FREQUENCY])',
+            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. [FREQUENCY]',
             'frequency' => 'quarterly',
             'deadline_month' => 0
         ];
@@ -421,7 +421,7 @@ class DisclosureWater extends Seeder
             'type_label' => '21б',
             'group' => '2', // Водоснабжение
             'title' => 'О количестве исполненных заявок о подключении к централизованной системе холодного водоснабжения в течение квартала',
-            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. ([FREQUENCY])',
+            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. [FREQUENCY]',
             'frequency' => 'quarterly',
             'deadline_month' => 0
         ];
@@ -431,7 +431,7 @@ class DisclosureWater extends Seeder
             'type_label' => '21в',
             'group' => '2', // Водоснабжение
             'title' => 'О количестве заявок о подключении к централизованной системе холодного водоснабжения, по которым принято решение об отказе в подключении (с указанием причин), в течение квартала',
-            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. ([FREQUENCY])',
+            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. [FREQUENCY]',
             'frequency' => 'quarterly',
             'deadline_month' => 0
         ];
@@ -441,7 +441,7 @@ class DisclosureWater extends Seeder
             'type_label' => '21г',
             'group' => '2', // Водоснабжение
             'title' => 'О резерве мощности централизованной системы холодного водоснабжения в течение квартала',
-            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. ([FREQUENCY])',
+            'deadline' => 'Отчитаться до: 1 [NEXT_AFTER_QUARTER_MONTH] [YEAR] года. [FREQUENCY]',
             'frequency' => 'quarterly',
             'deadline_month' => 0
         ];
