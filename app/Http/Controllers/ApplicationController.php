@@ -144,7 +144,8 @@ class ApplicationController extends Controller
             return response()->json([
                 'application' => $application,
                 'userProfile' => $application->user->profile,
-                'company'     => $application->user->company ?? ''
+                'company'     => $application->user->company ?? '',
+                'vendor'      => $application->vendor
             ]);
         } else {
             return response()->json([
