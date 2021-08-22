@@ -273,7 +273,7 @@ class UserController extends Controller
         $users = User::with(['profile','company'])
             ->where('client_id',auth()->user()->client_id)
             ->where('type', '<>', 'super');
-        $users = $users->paginate(10);
+        $users = $users->paginate($request->get('per_page', 10));
         return response()->json($users);
     }
 
@@ -300,10 +300,9 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function getDocuments(Request $request): JsonResponse
+    public function getDocuments($id): JsonResponse
     {
-        $out = Documents::getAllPrepared($request->get('id',null));
-
+        $out = Documents::getAllPrepared($id);
         return response()->json([
             'docs' => $out
         ]);
