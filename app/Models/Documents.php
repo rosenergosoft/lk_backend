@@ -19,6 +19,29 @@ class Documents extends Model
     const TYPE_YUR_SGR = 'yur_sgr';
     const TYPE_YUR_SPZUN = 'yur_spzun';
 
+    static public function getAllPrepared($id = null): array
+    {
+        $out = [
+            'phys' => [],
+            'yur' => []
+        ];
+        if ($id){
+            $userId = $id;
+        } else {
+            $userId = auth()->user()->id;
+        }
+        $documents = self::with(['signature'])->where('user_id', $userId)->get();
+        foreach ($documents as $doc) {
+            if ($doc->type === Documents::TYPE_PERSONAL_ID || $doc->type === Documents::TYPE_PROXY) {
+                $out['phys'][] = $doc;
+            } else {
+                $out['yur'][] = $doc;
+            }
+        }
+
+        return $out;
+    }
+
     public function signature(): HasOne
     {
         return $this->hasOne(DocumentSignature::class,'document_id');
