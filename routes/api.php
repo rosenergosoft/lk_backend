@@ -55,7 +55,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::post('document/unsign',[UserController::class,'unsignDocument']);
         Route::post('document/sendSms',[UserController::class,'sendSms']);
         Route::get('list',[UserController::class,'getList']);
-        Route::get('{id}',[UserController::class,'getUser']);
+        Route::get('{id}',[UserController::class,'getUser'])->where('id', '[0-9]+');
         Route::post('save',[UserController::class,'save']);
     });
 
