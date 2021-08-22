@@ -108,6 +108,8 @@ class UserController extends Controller
                     } else {
                         $user->profile()->create($request->get('userProfile'));
                     }
+                } else {
+                    $user->profile()->create([]);
                 }
                 $user->setPermissionsToUser($data['type']);
 
