@@ -46,6 +46,10 @@ class ApplicationController extends Controller
             $list = $list->with(['user.profile','user.company','vendor', 'client']);
         }
 
+        if (in_array('vendor',$roles)) {
+            $list = $list->with(['user.profile','user.company','vendor', 'client'])->where('vendor_id',$user->vendor->id);
+        }
+
         $list = $this->filter($list,$request->all());
         $list = $list->paginate(10);
 
