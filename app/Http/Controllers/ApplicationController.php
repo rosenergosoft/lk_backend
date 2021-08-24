@@ -43,11 +43,11 @@ class ApplicationController extends Controller
         }
 
         if (in_array('admin',$roles) || in_array('super',$roles)){
-            $list = $list->with(['user.profile','user.company','vendor', 'client']);
+            $list = $list->with(['user.profile','user.company','vendor', 'client'])->where('status', '<>', Application::STATUS_DRAFT);
         }
 
         if (in_array('vendor',$roles)) {
-            $list = $list->with(['user.profile','user.company','vendor', 'client'])->where('vendor_id',$user->vendor->id);
+            $list = $list->with(['user.profile','user.company','vendor', 'client'])->where('status', '<>', Application::STATUS_DRAFT)->where('vendor_id',$user->vendor->id);
         }
 
         $list = $this->filter($list,$request->all());
