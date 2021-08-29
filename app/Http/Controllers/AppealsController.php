@@ -181,7 +181,6 @@ class AppealsController extends Controller
                 'message' => 'No appeals found'
             ]);
         }
-
     }
 
     /**

@@ -14,6 +14,7 @@ use GuzzleHttp\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -34,6 +35,7 @@ class UserController extends Controller
     public function save(Request $request): JsonResponse
     {
         $data = $request->get('userData');
+
         switch ($data['type']){
             case 'vendor':
                 if (isset($data['id'])){
@@ -149,8 +151,9 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $user = User::find(auth()->user()->id);
+
         if (isset($data['oldPassword'])) {
-            if ($user->password !== $data['oldPassword']) {
+            if (!Hash::check($data['oldPassword'] ,$user->password)) {
                 return response()->json([
                     'error' => true,
                     'errors' => [
@@ -158,7 +161,6 @@ class UserController extends Controller
                     ]
                 ]);
             }
-
             $user->password = bcrypt($data['newPassword']);
         }
         switch ($data['login_type']) {
