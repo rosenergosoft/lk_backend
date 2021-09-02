@@ -190,6 +190,16 @@ class AppealsController extends Controller
     public function getAppeal($appealId): JsonResponse
     {
         $appeal = Appeal::find($appealId);
+        $user = auth()->user();
+        $roles = $user->getRoleNames()->toArray();
+        if(in_array('customer', $roles)) {
+            if ($appeal->user_id !== $user->id){
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Forbidden'
+                ]);
+            }
+        }
         if($appeal) {
             return response()->json([
                 'appeal' => $appeal,
