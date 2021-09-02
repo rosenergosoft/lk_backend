@@ -52,7 +52,7 @@ class DisclosureController extends Controller
      */
     public function getList($group): JsonResponse
     {
-        $list = DisclosureList::select('disclosure_list.*', 'disclosure.is_processed')
+        $list = DisclosureList::select('disclosure_list.*', 'disclosure.is_processed', 'disclosure.is_show')
             ->where("disclosure_list.group", $group)
             ->leftJoin("disclosure", 'disclosure.disclosure_label_id', '=', 'disclosure_list.id')
             ->orderBy('disclosure_list.id')

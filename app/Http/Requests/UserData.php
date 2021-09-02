@@ -28,7 +28,10 @@ class UserData extends FormRequest
             'snils' => 'required_if:login_type,phys',
             'ogrn' => 'required_if:login_type,yur',
             'ohrnip' => 'required_if:login_type,ip',
-            'email' => 'email',
+            'email' => [
+                'email',
+                'required',
+                ],
             'phone' => 'max:11',
             'oldPassword' => 'required_with:newPassword,confirmNewPassword',
             'newPassword' => 'required_with:oldPassword',
