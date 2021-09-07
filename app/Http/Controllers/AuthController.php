@@ -94,6 +94,13 @@ class AuthController extends Controller
         if ($host) {
             $client = Client::where('host', $host)->first();
             if ($client){
+                $duplicate = User::where('client_id',$client->id)->where('email',$request->get('email'))->first();
+                if ($duplicate) {
+                    return response()->json([
+                        'error' => true,
+                        'message' => 'Duplicate'
+                    ]);
+                }
                 $user = new User();
                 $user->type = 'customer';
                 $user->client_id = $client->id;
