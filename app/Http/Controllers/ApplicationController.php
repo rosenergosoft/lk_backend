@@ -144,6 +144,16 @@ class ApplicationController extends Controller
     public function getApplication($applicationId): JsonResponse
     {
         $application = Application::find($applicationId);
+        $user = auth()->user();
+        $roles = $user->getRoleNames()->toArray();
+        if(in_array('customer', $roles)) {
+            if ($application->user_id !== $user->id){
+                return response()->json([
+                    'error' => true,
+                    'message' => 'Forbidden'
+                ]);
+            }
+        }
         if( $application) {
             return response()->json([
                 'application' => $application,

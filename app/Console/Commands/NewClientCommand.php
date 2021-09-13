@@ -21,6 +21,13 @@ class NewClientCommand extends Command
      */
     protected $description = 'Make new client';
 
+    protected $types = [
+        Client::TYPE_ELECTRICITY => 'Electricity',
+        Client::TYPE_WARM => 'Warm',
+        Client::TYPE_WATER => 'Water',
+        Client::TYPE_SEWERAGE => 'Sewerage'
+    ];
+
     /**
      * Create a new command instance.
      *
@@ -41,12 +48,14 @@ class NewClientCommand extends Command
         do {
             $details  = $this->askForUserDetails($details ?? null);
             $name     = $details['name'];
-            $host    = $details['host'];
+            $host     = $details['host'];
+            $type     = $details['type'];
         } while (!$this->confirm("Create client {$name} <{$host}>?", true));
 
         $client = new Client();
         $client->name = $name;
         $client->host = $host;
+        $client->type = [$type];
         $client->save();
 
         $this->info("Created new client #{$client->id}");
@@ -60,8 +69,9 @@ class NewClientCommand extends Command
     protected function askForUserDetails($defaults = null)
     {
         $name     = $this->ask('Name of client?', $defaults['name'] ?? null);
-        $host    = $this->ask('Which domain this client uses?', $defaults['host'] ?? null);
+        $host     = $this->ask('Which domain this client uses?', $defaults['host'] ?? null);
+        $type     = $this->choice('Which type of this client?', $this->types, $defaults['type'] ?? null);
 
-        return compact('name', 'host');
+        return compact('name', 'host', 'type');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeSnilsTypeInUsersTable extends Migration
+class ChangeUniqKeyToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,8 @@ class ChangeSnilsTypeInUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('snils')->change();
+            $table->dropUnique('users_email_unique');
+            $table->unique(['email','client_id']);
         });
     }
 
@@ -26,7 +27,8 @@ class ChangeSnilsTypeInUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->bigInteger('snils')->nullable()->change();
+            $table->dropUnique('users_email_client_id_unique');
+            $table->unique('email');
         });
     }
 }
