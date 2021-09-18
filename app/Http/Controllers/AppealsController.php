@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Appeal;
 use App\Models\AppealDocs;
-use App\Models\AppealMessages;
+use App\Models\Messages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
-use Psy\Util\Json;
 
 class AppealsController extends Controller
 {
@@ -80,14 +78,15 @@ class AppealsController extends Controller
      */
     public function sendMessage(Request $request): JsonResponse
     {
-        if($appeal_id = $request->get('appeal_id')) {
-            $message = new AppealMessages();
-            $message->appeal_id = $appeal_id;
+        if($entity_id = $request->get('entity_id')) {
+            $message = new Messages();
+            $message->entity_id = $entity_id;
+            $message->type = "appeals";
             $message->user_id = auth()->user()->id;
             if($messageText = $request->get('message')) {
                 $message->message = $messageText;
                 $message->save();
-                $appeal = Appeal::find($appeal_id);
+                $appeal = Appeal::find($entity_id);
                 if(auth()->user()->type === 'customer') {
                     $appeal->status = Appeal::STATUS_ACCEPTED;
                 } else {
@@ -97,7 +96,7 @@ class AppealsController extends Controller
 
                 return response()->json([
                     'success' => 'true',
-                    'messages' => AppealMessages::with('userProfile')->where('appeal_id', $appeal_id)->get(),
+                    'messages' => Messages::with('userProfile')->where('entity_id', $entity_id)->get(),
                     'message' => 'Сообщение отправлено',
                     'appeal' => $appeal
                 ]);

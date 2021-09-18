@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class AppealMessages extends Model
+class Messages extends Model
 {
     use HasFactory;
 
-    protected $table = 'appeals_messages';
+    protected $table = 'messages';
 
     public function user(): HasOne
     {

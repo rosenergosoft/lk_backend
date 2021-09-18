@@ -44,6 +44,6 @@ class Appeal extends Model
 
     public function messages(): HasMany
     {
-        return $this->hasMany(AppealMessages::class, 'appeal_id', 'id');
+        return $this->hasMany(Messages::class, 'entity_id', 'id')->where('type', 'appeals');
     }
 }

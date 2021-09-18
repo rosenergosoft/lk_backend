@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use App\Models\Documents;
-use App\Scopes\ClientScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Psy\Util\Json;
+use App\Models\Messages;
 
 class ApplicationController extends Controller
 {
@@ -96,6 +95,59 @@ class ApplicationController extends Controller
             'success' => true,
             'counts' => $count
         ]);
+    }
+
+    public function sendMessage(Request $request): JsonResponse
+    {
+        if($entity_id = $request->get('entity_id')) {
+            $message = new Messages();
+            $message->entity_id = $entity_id;
+            $message->type = "applications_electricity";
+            $message->user_id = auth()->user()->id;
+            if($messageText = $request->get('message')) {
+                $message->message = $messageText;
+                $message->save();
+                $application = Application::find($entity_id);
+                if(auth()->user()->type === 'customer') {
+                    $application->status = Application::STATUS_ACCEPTED;
+                } else {
+                    $application->status = Application::STATUS_WAITING_COMPANY_RESPONSE;
+                }
+                $application->save();
+
+                return response()->json([
+                    'success' => 'true',
+                    'messages' => Messages::with('userProfile')->where('entity_id', $entity_id)->get(),
+                    'message' => 'Сообщение отправлено',
+                    'application' => $application
+                ]);
+            }
+        }
+        return response()->json([
+            'error' => 'false',
+            'message' => 'Ошибка'
+        ]);
+    }
+
+    /**
+     * @param $appealId
+     * @return JsonResponse
+     */
+    public function getMessages($applicationId): JsonResponse
+    {
+        $application = Application::find($applicationId);
+        if($application) {
+            $messages = $application->messages()->with(['userProfile'])->get();
+            return response()->json([
+                'success' => 'true',
+                'messages' => $messages
+            ]);
+        } else {
+            return response()->json([
+                'error' => 'true',
+                'message' => 'Ошибка'
+            ]);
+        }
     }
 
     /**

@@ -42,6 +42,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::get('/list',[ClientController::class,'list']);
         Route::post('/switch',[ClientController::class,'switchClient']);
     });
+
     Route::group(['prefix' => 'user'], function () {
         Route::post('/',[UserController::class,'update']);
         Route::post('profile',[UserController::class,'saveProfile']);
@@ -71,6 +72,10 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::post('draft',[ApplicationController::class,'draft']);
         Route::post('create',[ApplicationController::class,'create']);
         Route::post('changeStatus',[ApplicationController::class,'changeStatus']);
+        Route::post('sendMessage',[ApplicationController::class,'sendMessage']);
+        Route::get('getMessages/{id}',[ApplicationController::class,'getMessages']);
+
+
     });
 
     Route::group(['prefix' => 'appeals'], function () {
