@@ -20,4 +20,8 @@ class Disclosure extends Model
     {
         return $this->hasMany(DisclosureDocs::class, "disclosure_id", "id");
     }
+
+    public function disclosureList() {
+        return $this->belongsTo(DisclosureList::class, 'disclosure_label_id', 'id');
+    }
 }

@@ -67,10 +67,9 @@ class DisclosureController extends Controller
         ]);
     }
 
-    public function getPublicList(Request $request): JsonResponse
+    public function getPublicList($clientId): JsonResponse
     {
-        $clientId = $request->get('client_id');
-        $list = Disclosure::where('client_id',$clientId)->get();
+        $list = Disclosure::with(['docs', 'disclosureList'])->where('client_id', $clientId)->get();
 
         if ($list) {
             return response()->json([
