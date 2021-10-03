@@ -16,7 +16,7 @@ class Active
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->user()->is_active) {
+        if ($request->user() && $request->user()->is_active) {
             return $next($request);
         } else {
             abort(401);
