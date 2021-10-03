@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use PhpParser\Node\Expr\Cast\Object_;
+use Illuminate\Support\Facades\DB;
 
 class DisclosureController extends Controller
 {
@@ -54,7 +54,10 @@ class DisclosureController extends Controller
     {
         $list = DisclosureList::select('disclosure_list.*', 'disclosure.is_processed', 'disclosure.is_show')
             ->where("disclosure_list.group", $group)
-            ->leftJoin("disclosure", 'disclosure.disclosure_label_id', '=', 'disclosure_list.id')
+            ->leftJoin("disclosure", function($join) {
+                $join->on('disclosure.disclosure_label_id', '=', 'disclosure_list.id');
+                $join->on('disclosure.client_id', DB::raw(auth()->user()->client_id));
+            })
             ->orderBy('disclosure_list.id')
             ->get();
         if ($list) {
@@ -113,7 +116,7 @@ class DisclosureController extends Controller
                         $disclosure->is_show = 0;
                         $disclosure->group_by = 0;
                         $disclosure->content = '';
-                        $disclosure->user_id = auth()->user()->id;
+                        $disclosure->client_id = auth()->user()->client_id;
                         $disclosure->disclosure_label_id = $disclosureLabelId;
                         $disclosure->save();
                         $disclosureId = $disclosure->id;
@@ -147,7 +150,7 @@ class DisclosureController extends Controller
                 'is_processed' => intval($data['is_processed']),
                 'is_show' => intval($data['is_show']),
                 'group_by' => intval($data['group_by']),
-                'user_id' => auth()->user()->id,
+                'client_id' => auth()->user()->client_id,
             ]
         );
         if(isset($data['docs'])) {

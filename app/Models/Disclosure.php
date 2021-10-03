@@ -11,7 +11,7 @@ class Disclosure extends Model
         'is_show',
         'is_processed',
         'disclosure_label_id',
-        'user_id',
+        'client_id',
         'group_by'
     ];
     protected $table = 'disclosure';

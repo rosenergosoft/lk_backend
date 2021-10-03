@@ -11,6 +11,6 @@ class DisclosureList extends Model
 
     public function disclosure () {
         return $this->hasOne(Disclosure::class, 'disclosure_label_id', 'id')
-            ->where('disclosure.user_id', Auth::user()->id);
+            ->where('disclosure.client_id', auth()->user()->client_id);
     }
 }
