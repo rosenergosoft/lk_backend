@@ -67,6 +67,11 @@ class Application extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function docs (): HasMany
+    {
+        return $this->hasMany(AppDocs::class, 'entity_id', 'id')->with('user');
+    }
+
     public function messages(): HasMany
     {
         return $this->hasMany(Messages::class, 'entity_id', 'id')->where('type', 'applications_electricity');

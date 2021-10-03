@@ -74,8 +74,10 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::post('changeStatus',[ApplicationController::class,'changeStatus']);
         Route::post('sendMessage',[ApplicationController::class,'sendMessage']);
         Route::get('getMessages/{id}',[ApplicationController::class,'getMessages']);
-
-
+        Route::post('fileUpload',[ApplicationController::class,'fileUpload']);
+        Route::post('fileDelete',[ApplicationController::class,'fileDelete']);
+        Route::get('getDocs/{id}',[ApplicationController::class,'getDocs']);
+        Route::get('downloadFile/{fileId}',[ApplicationController::class,'downloadFile']);
     });
 
     Route::group(['prefix' => 'appeals'], function () {

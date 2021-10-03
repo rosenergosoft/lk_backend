@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appeal;
-use App\Models\AppealDocs;
+use App\Models\AppDocs;
 use App\Models\Messages;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -221,15 +221,16 @@ class AppealsController extends Controller
         if ($Request->file()){
             foreach ($Request->file() as $type => $file) {
                 $path_parts = pathinfo($file->getClientOriginalName());
-                $document = new AppealDocs();
+                $document = new AppDocs();
                 $filename = Str::random(40).'.'.$path_parts['extension'];
                 $filePath = $file->storeAs('uploads', $filename,'public');
                 $document->file = $filePath;
+                $document->type = 'appeals';
                 $document->original_name = $file->getClientOriginalName();
                 $document->user_id = Auth()->user()->id;
-                if($appealId = $Request->get('appeal_id')) {
+                if($appealId = $Request->get('entity_id')) {
                     $appeal = Appeal::find($appealId);
-                    $document->appeal_id = $appealId;
+                    $document->entity_id = $appealId;
                 } else {
                     return response()->json(['success' => false, 'message' => 'Error']);
                 }
@@ -251,7 +252,9 @@ class AppealsController extends Controller
      */
     public function getDocs($appealId): JsonResponse
     {
-        $docs = AppealDocs::where('appeal_id', $appealId)->get();
+        $docs = AppDocs::where('entity_id', $appealId)
+            ->where('type', 'appeals')
+            ->get();
         if($docs) {
             return response()->json([
                 'success' => true,
@@ -271,8 +274,8 @@ class AppealsController extends Controller
      */
     public function fileDelete(Request $request): JsonResponse
     {
-        $doc = AppealDocs::find($request->get('doc_id'));
-        if($doc->appeal_id == $request->get('appeal_id') && $doc->user_id == Auth()->user()->id) {
+        $doc = AppDocs::find($request->get('doc_id'));
+        if($doc->entity_id == $request->get('appeal_id') && $doc->user_id == Auth()->user()->id) {
             $doc->delete();
             return response()->json(['success' => true]);
         } else {
@@ -281,7 +284,7 @@ class AppealsController extends Controller
     }
 
     public function downloadFile ($fileId) {
-        $doc = AppealDocs::find($fileId);
+        $doc = AppDocs::find($fileId);
         if($doc->user_id == Auth()->user()->id) {
             $file = public_path('storage/' . $doc->file);
             return response()->make(file_get_contents($file), 200, [

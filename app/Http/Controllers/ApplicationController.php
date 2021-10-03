@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AppDocs;
 use App\Models\Application;
 use App\Models\Documents;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Messages;
+use Illuminate\Support\Str;
 
 class ApplicationController extends Controller
 {
@@ -97,6 +99,92 @@ class ApplicationController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $Request
+     * @return JsonResponse
+     */
+    public function fileUpload (Request $Request): JsonResponse
+    {
+        if ($Request->file()){
+            foreach ($Request->file() as $type => $file) {
+                $path_parts = pathinfo($file->getClientOriginalName());
+                $document = new AppDocs();
+                $filename = Str::random(40).'.'.$path_parts['extension'];
+                $filePath = $file->storeAs('uploads', $filename,'public');
+                $document->file = $filePath;
+                $document->type = 'applications_electricity';
+                $document->original_name = $file->getClientOriginalName();
+                $document->user_id = Auth()->user()->id;
+                if($applicationId = $Request->get('entity_id')) {
+                    $application = Application::find($applicationId);
+                    $document->entity_id = $applicationId;
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Error']);
+                }
+
+                $document->save();
+            }
+            return response()->json([
+                'success' => true,
+                'docs' => $application->docs,
+                'application' => $application
+            ]);
+        }
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * @param $appealId
+     * @return JsonResponse
+     */
+    public function getDocs($applicationId): JsonResponse
+    {
+        $docs = AppDocs::with('user')->where('entity_id', $applicationId)
+            ->where('type', 'applications_electricity')
+            ->get();
+        if($docs) {
+            return response()->json([
+                'success' => true,
+                'docs' => $docs
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'There\'s no docs for this appeal'
+            ]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function fileDelete(Request $request): JsonResponse
+    {
+        $doc = AppDocs::find($request->get('doc_id'));
+        if($doc->entity_id == $request->get('application_id') && $doc->user_id == Auth()->user()->id) {
+            $doc->delete();
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'You don\'t have enough permissions for this action']);
+        }
+    }
+
+    public function downloadFile ($fileId) {
+        $doc = AppDocs::find($fileId);
+        if($doc->user_id == Auth()->user()->id) {
+            $file = public_path('storage/' . $doc->file);
+            return response()->make(file_get_contents($file), 200, [
+                'Content-type: ' . mime_content_type($file),
+                'Content-Disposition: attachment; filename=' . $doc->original_name
+            ]);
+        } else return '';
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function sendMessage(Request $request): JsonResponse
     {
         if($entity_id = $request->get('entity_id')) {

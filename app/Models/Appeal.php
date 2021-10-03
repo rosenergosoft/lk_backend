@@ -34,7 +34,7 @@ class Appeal extends Model
 
     public function docs (): HasMany
     {
-        return $this->hasMany(AppealDocs::class, 'appeal_id', 'id');
+        return $this->hasMany(AppDocs::class, 'entity_id', 'id');
     }
 
     public function user(): HasOne
