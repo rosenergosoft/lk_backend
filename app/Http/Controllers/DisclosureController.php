@@ -67,6 +67,21 @@ class DisclosureController extends Controller
         ]);
     }
 
+    public function getPublicList(Request $request): JsonResponse
+    {
+        $clientId = $request->get('client_id');
+        $list = Disclosure::where('client_id',$clientId)->get();
+
+        if ($list) {
+            return response()->json([
+                'disclosures' => $list
+            ]);
+        }
+        return response()->json([
+            'message' => 'No disclosures in this group'
+        ]);
+    }
+
     /**
      * @param null $disclosureId
      * @param null $disclosureLabelId
