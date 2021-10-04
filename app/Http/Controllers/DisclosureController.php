@@ -73,16 +73,19 @@ class DisclosureController extends Controller
 
     public function getPublicList($clientId): JsonResponse
     {
-        $list = Disclosure::with(['docs', 'disclosureList'])->where('client_id', $clientId)->where('is_show',1)->get();
+        $disclosureCollection = Disclosure::with(['docs', 'disclosureList'])->where('client_id', $clientId)->where('is_show',1)->get();
+        $list = new DisclosureCollection($disclosureCollection);
+
         $sorted = $list->sortBy(function ($order) {
             return $order->disclosureList->id;
         });
+
         $list = $sorted->values()->all();
 
         if ($list) {
             return response()->json([
                 'success' => true,
-                'disclosures' => DisclosureCollection::collection($list)
+                'disclosures' => $list
             ]);
         }
         return response()->json([
