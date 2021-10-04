@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DisclosureCollection;
 use App\Models\Disclosure;
 use App\Models\DisclosureDocs;
 use App\Models\DisclosureList;
@@ -77,7 +78,7 @@ class DisclosureController extends Controller
         if ($list) {
             return response()->json([
                 'success' => true,
-                'disclosures' => $list
+                'disclosures' => DisclosureCollection::collection($list)
             ]);
         }
         return response()->json([
