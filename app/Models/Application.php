@@ -20,8 +20,13 @@ class Application extends Model
     const STATUS_COMPLETED = 'completed'; // выполнен
     const STATUS_DECLINED = 'declined'; // отклонен
 
+    CONST APPLICATION_TYPE_ELECTRICITY = 'electricity';
+    CONST APPLICATION_TYPE_WARM = 'warm';
+    CONST APPLICATION_TYPE_WATER = 'water';
+
     protected $fillable = [
         'user_id',
+        'type',
         'status',
         'connectionType',
         'requester',
@@ -44,6 +49,22 @@ class Application extends Model
         'power',
         'vendor_id',
         'pricing',
+        'limitingParams',
+        'typeOfLand',
+        'landBoundaries',
+        'legalBase',
+        'warmOther',
+        'warmHotWaterH',
+        'warmHotWaterR',
+        'warmVentilation',
+        'warmHeating',
+        'warmTotal',
+        'numberOfStoreys',
+        'commissioningDate',
+        'totalArea',
+        'constructionVolume',
+        'objectPurpose',
+        'objectLocation',
         'other',
     ];
 

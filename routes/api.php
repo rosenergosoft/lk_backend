@@ -69,7 +69,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
     Route::group(['prefix' => 'application'], function () {
         Route::get('list',[ApplicationController::class,'list']);
         Route::get('counts',[ApplicationController::class,'getCounts']);
-        Route::get('draft',[ApplicationController::class,'getDraft']);
+        Route::get('draft/{type?}',[ApplicationController::class,'getDraft']);
         Route::get('get/{id}',[ApplicationController::class,'getApplication']);
         Route::post('draft',[ApplicationController::class,'draft']);
         Route::post('create',[ApplicationController::class,'create']);

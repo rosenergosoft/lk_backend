@@ -241,10 +241,11 @@ class ApplicationController extends Controller
     /**
      * @return JsonResponse
      */
-    public function draft(): JsonResponse
+    public function draft(Request $request): JsonResponse
     {
         $data = [
             'user_id' => auth()->user()->id,
+            'type' => $request->get('type'),
             'status' => Application::STATUS_DRAFT
         ];
 
@@ -259,10 +260,11 @@ class ApplicationController extends Controller
     /**
      * @return JsonResponse
      */
-    public function getDraft(): JsonResponse
+    public function getDraft($type): JsonResponse
     {
         $application = Application::where('status', Application::STATUS_DRAFT)
             ->where('user_id', auth()->user()->id)
+            ->where('type', $type)
             ->first();
         if ($application){
             $docs = Documents::getAllPrepared();
