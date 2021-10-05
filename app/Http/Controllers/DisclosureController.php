@@ -59,7 +59,7 @@ class DisclosureController extends Controller
                 $join->on('disclosure.disclosure_label_id', '=', 'disclosure_list.id');
                 $join->on('disclosure.client_id', DB::raw(auth()->user()->client_id));
             })
-            ->orderBy('disclosure_list.id')
+            ->orderBy('disclosure_list.type_label')
             ->get();
         if ($list) {
             return response()->json([
@@ -77,7 +77,7 @@ class DisclosureController extends Controller
         $list = new DisclosureCollection($disclosureCollection);
 
         $sorted = $list->sortBy(function ($order) {
-            return $order->disclosureList->id;
+            return $order->disclosureList->type_label;
         });
 
         $list = $sorted->values()->all();
