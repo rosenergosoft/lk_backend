@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\VendorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -103,5 +104,9 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::post('fileUpload',[DisclosureController::class,'fileUpload']);
         Route::post('save',[DisclosureController::class,'save']);
         Route::post('fileDelete',[DisclosureController::class,'fileDelete']);
+    });
+
+    Route::group(['prefix' => 'settings'], function() {
+        Route::get('/type/list',[SettingsController::class,'typeList']);
     });
 });
