@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Schema;
 
 class RolesSeeder extends Seeder
 {
@@ -39,6 +40,7 @@ class RolesSeeder extends Seeder
             'disclosure_list',
             'disclosure_edit',
             'settings',
+            'information'
         ];
 
         $roles = [
@@ -54,9 +56,10 @@ class RolesSeeder extends Seeder
                 'disclosure_add',
                 'disclosure_list',
                 'disclosure_edit',
-                'settings',
                 'appeals_list',
                 'appeals_edit',
+                'settings',
+                'information'
             ],
             'admin' => [
                 'myAccount_edit',
@@ -70,9 +73,9 @@ class RolesSeeder extends Seeder
                 'disclosure_add',
                 'disclosure_list',
                 'disclosure_edit',
-                'settings',
                 'appeals_list',
                 'appeals_edit',
+                'information'
             ],
             'customer' => [
                 'myAccount_edit',
@@ -98,6 +101,11 @@ class RolesSeeder extends Seeder
                 'appeals_edit',
             ]
         ];
+
+        Schema::disableForeignKeyConstraints();
+        Role::truncate();
+        Permission::truncate();
+        Schema::enableForeignKeyConstraints();
 
         foreach ($permissions as $name) {
             Permission::create(['name' => $name]);

@@ -44,6 +44,8 @@ Route::group(['middleware' => ['api','active']],function ($router) {
         Route::post('/save',[ClientController::class,'save']);
         Route::get('/list',[ClientController::class,'list']);
         Route::post('/switch',[ClientController::class,'switchClient']);
+        Route::get('/fields',[ClientController::class,'getFields']);
+        Route::post('/saveFields',[ClientController::class,'saveFields']);
     });
 
     Route::group(['prefix' => 'user'], function () {

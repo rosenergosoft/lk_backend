@@ -3,13 +3,59 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\CompanyInformation;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    public function get(Request $request)
+    /**
+     * @return JsonResponse
+     */
+    public function getFields(): JsonResponse
+    {
+        $id = auth()->user()->client_id;
+        $fields = CompanyInformation::where('client_id', $id)->get();
+        if($fields->count() == 0) {
+            $fields = CompanyInformation::$fields;
+        }
+        return response()->json([
+            'success' => true,
+            'fields' => $fields
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function saveFields(Request $request) {
+        if (auth()->user()->hasRole('super') || auth()->user()->hasRole('admin')) {
+            $clientId = auth()->user()->client_id;
+
+            $fields = $request->get('fields');
+
+            foreach ($fields as $key=>$field) {
+                $fields[$key]['client_id'] = $clientId;
+                unset($fields[$key]['created_at']);
+                unset($fields[$key]['updated_at']);
+                if(!isset($field['value'])) $fields[$key]['value'] = '';
+            }
+
+            CompanyInformation::upsert($fields, ['client_id', 'name']);
+
+            return response()->json([
+                'success' => true
+            ]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function get(Request $request): JsonResponse
     {
         if (auth()->user()->hasRole('super')) {
             $id = auth()->user()->client_id;
@@ -24,7 +70,11 @@ class ClientController extends Controller
         return response()->json(['error' => true, 'message' => "You don't have a permission for this"]);
     }
 
-    public function save(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function save(Request $request): JsonResponse
     {
         if (auth()->user()->hasRole('super')) {
             $id = auth()->user()->client_id;
@@ -41,6 +91,10 @@ class ClientController extends Controller
         return response()->json(['error' => true, 'message' => "You don't have a permission for this"]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function list(Request $request): JsonResponse
     {
 
@@ -55,6 +109,10 @@ class ClientController extends Controller
         return response()->json(['error' => true, 'message' => "You don't have a permission for this"]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function switchClient(Request $request): JsonResponse
     {
         if (auth()->user()->hasRole('super')) {

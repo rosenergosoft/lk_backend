@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\AppDocs;
 use App\Models\Application;
+use App\Models\CompanyInformation;
 use App\Models\Documents;
+use App\Models\User;
+use App\Services\DocumentGenerationService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Messages;
@@ -108,9 +112,9 @@ class ApplicationController extends Controller
         if ($Request->file()){
             foreach ($Request->file() as $type => $file) {
                 $path_parts = pathinfo($file->getClientOriginalName());
-                $document = new AppDocs();
                 $filename = Str::random(40).'.'.$path_parts['extension'];
                 $filePath = $file->storeAs('uploads', $filename,'public');
+                $document = new AppDocs();
                 $document->file = $filePath;
                 $document->type = 'applications_electricity';
                 $document->original_name = $file->getClientOriginalName();
@@ -321,6 +325,25 @@ class ApplicationController extends Controller
             $application = Application::find($data['id']);
             $data['status'] = Application::STATUS_WAITING_COMPANY_RESPONSE;
             $application->update($data);
+
+
+            $clientId = auth()->user()->client_id;
+            $user = User::find(auth()->user()->id);
+            $companyInformation = CompanyInformation::where('client_id', $clientId)->get();
+
+            if($application->type == 'electricity') {
+                $documentService = new DocumentGenerationService();
+                $generatedDocument = $documentService->generateElectricityDocs($companyInformation, $user, $application);
+                if ($generatedDocument) {
+                    $document = new AppDocs();
+                    $document->file = $generatedDocument['path'];
+                    $document->type = 'applications_electricity';
+                    $document->original_name = $generatedDocument['name'];
+                    $document->user_id = $user->id;
+                    $document->entity_id = $application->id;
+                    $document->save();
+                }
+            }
 
             return response()->json([
                 'success' => true,
