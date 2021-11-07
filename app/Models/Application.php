@@ -143,6 +143,13 @@ class Application extends Model
         'objectPurpose',
         'objectLocation',
         'other',
+        'hasCalculationData',
+        'projectLoadCalcDoc',
+        'waterLoad',
+        'objectRightsDoc',
+        'waterType',
+        'waterTypeIn',
+        'waterTypeOut',
     ];
 
     protected static function booted()
@@ -172,6 +179,6 @@ class Application extends Model
 
     public function messages(): HasMany
     {
-        return $this->hasMany(Messages::class, 'entity_id', 'id')->where('type', 'applications_electricity');
+        return $this->hasMany(Messages::class, 'entity_id', 'id');
     }
 }

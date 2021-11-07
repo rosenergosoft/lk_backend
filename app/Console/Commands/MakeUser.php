@@ -57,7 +57,14 @@ class MakeUser extends Command
         } while (!$this->confirm("Create user {$name} <{$email}>?", true));
         $clientId = array_search($client, $this->clients);
         $role = array_search($role, $this->rolesMap);
-        $user = User::forceCreate(['name' => $name, 'email' => $email, 'password' => \Hash::make($password), 'client_id' => $clientId, 'type' => 'super', 'is_active' => 1]);
+        $user = User::forceCreate([
+            'name' => $name,
+            'email' => $email,
+            'password' => \Hash::make($password),
+            'client_id' => $clientId,
+            'type' => 'super',
+            'is_active' => 1
+        ]);
         $user->assignRole($this->rolesMap[$role]);
         $permissions = Role::findById($role)->permissions->pluck('name');
         $user->syncPermissions($permissions);

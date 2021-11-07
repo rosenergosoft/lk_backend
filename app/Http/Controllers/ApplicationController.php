@@ -104,22 +104,22 @@ class ApplicationController extends Controller
     }
 
     /**
-     * @param Request $Request
+     * @param Request $request
      * @return JsonResponse
      */
-    public function fileUpload (Request $Request): JsonResponse
+    public function fileUpload (Request $request): JsonResponse
     {
-        if ($Request->file()){
-            foreach ($Request->file() as $type => $file) {
+        if ($request->file()){
+            foreach ($request->file() as $type => $file) {
                 $path_parts = pathinfo($file->getClientOriginalName());
                 $filename = Str::random(40).'.'.$path_parts['extension'];
                 $filePath = $file->storeAs('uploads', $filename,'public');
                 $document = new AppDocs();
                 $document->file = $filePath;
-                $document->type = 'applications_electricity';
+                $document->type = $request->get('type','common');
                 $document->original_name = $file->getClientOriginalName();
                 $document->user_id = Auth()->user()->id;
-                if($applicationId = $Request->get('entity_id')) {
+                if($applicationId = $request->get('entity_id')) {
                     $application = Application::find($applicationId);
                     $document->entity_id = $applicationId;
                 } else {
@@ -144,7 +144,6 @@ class ApplicationController extends Controller
     public function getDocs($applicationId): JsonResponse
     {
         $docs = AppDocs::with('user')->where('entity_id', $applicationId)
-            ->where('type', 'applications_electricity')
             ->get();
         if($docs) {
             return response()->json([
@@ -194,7 +193,7 @@ class ApplicationController extends Controller
         if($entity_id = $request->get('entity_id')) {
             $message = new Messages();
             $message->entity_id = $entity_id;
-            $message->type = "applications_electricity";
+            $message->type = "common";
             $message->user_id = auth()->user()->id;
             if($messageText = $request->get('message')) {
                 $message->message = $messageText;
@@ -337,7 +336,7 @@ class ApplicationController extends Controller
                 if ($generatedDocument) {
                     $document = new AppDocs();
                     $document->file = $generatedDocument['path'];
-                    $document->type = 'applications_electricity';
+                    $document->type = 'generated_doc';
                     $document->original_name = $generatedDocument['name'];
                     $document->user_id = $user->id;
                     $document->entity_id = $application->id;
