@@ -15,11 +15,13 @@ class DisclosureDocsResource extends JsonResource
      */
     public function toArray($request)
     {
+        if($this->document_date) $date = Carbon::parse($this->document_date)->format('d.m.Y');
+        else $date = '';
         return [
             'name' => $this->name,
             'original_name' => $this->original_name,
             'id' => $this->id,
-            'document_date' => Carbon::parse($this->document_date)->format('d.m.Y'),
+            'document_date' => $date,
             'file' => $this->file
         ];
     }
