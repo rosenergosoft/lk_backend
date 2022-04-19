@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class MoreDisclosures extends Seeder
 {
+    protected $table = 'disclosure_list';
     /**
      * Run the database seeds.
      *
@@ -182,5 +184,7 @@ class MoreDisclosures extends Seeder
             'frequency' => 'YEARLY',
             'deadline_month' => 12
         ];
+
+        DB::table($this->table)->insert($data);
     }
 }
