@@ -74,7 +74,7 @@ class DisclosureController extends Controller
     public function getPublicList($clientId, $type = 0): JsonResponse
     {
         $disclosureCollection = Disclosure::with(['docs', 'disclosureList' => function($query) use ($type) {
-//            $query->where('type', $type);
+            $query->where('type', $type);
         }])->where('client_id', $clientId)->where('is_show',1)->get();
         $list = new DisclosureCollection($disclosureCollection);
 
