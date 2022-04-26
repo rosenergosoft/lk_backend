@@ -59,9 +59,8 @@ class DisclosureController extends Controller
                 $join->on('disclosure.disclosure_label_id', '=', 'disclosure_list.id');
                 $join->on('disclosure.client_id', DB::raw(auth()->user()->client_id));
             })
-            ->orderBy('disclosure_list.type_label');
-        if($type) $list->where('type', $type);
-        $list = $list->get();
+            ->orderBy('disclosure_list.type_label')->get();
+
         if ($list) {
             return response()->json([
                 'disclosures' => $list
@@ -72,9 +71,11 @@ class DisclosureController extends Controller
         ]);
     }
 
-    public function getPublicList($clientId): JsonResponse
+    public function getPublicList($clientId, $type = false): JsonResponse
     {
-        $disclosureCollection = Disclosure::with(['docs', 'disclosureList'])->where('client_id', $clientId)->where('is_show',1)->get();
+        $disclosureCollection = Disclosure::with(['docs', 'disclosureList'])->where('client_id', $clientId)->where('is_show',1);
+        if($type) $disclosureCollection->where('type', $type);
+        $disclosureCollection->get();
         $list = new DisclosureCollection($disclosureCollection);
 
         $sorted = $list->sortBy(function ($order) {

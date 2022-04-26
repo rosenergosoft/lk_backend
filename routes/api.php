@@ -36,7 +36,7 @@ Route::group([
 
 Route::post('registration',[AuthController::class,'registration']);
 
-Route::get('disclosure/list/{client_id?}', [DisclosureController::class,'getPublicList']);
+Route::get('disclosure/list/{client_id?}/{type?}', [DisclosureController::class,'getPublicList']);
 
 Route::group(['middleware' => ['api','active']],function ($router) {
     Route::group(['prefix' => 'client'], function () {
@@ -102,7 +102,7 @@ Route::group(['middleware' => ['api','active']],function ($router) {
 
     Route::group(['prefix' => 'disclosure'], function () {
         Route::get('getByType/{group}/{type}',[DisclosureController::class,'getByType']);
-        Route::get('getList/{group}/{type?}',[DisclosureController::class,'getList']);
+        Route::get('getList/{group}',[DisclosureController::class,'getList']);
         Route::post('fileUpload',[DisclosureController::class,'fileUpload']);
         Route::post('save',[DisclosureController::class,'save']);
         Route::post('fileDelete',[DisclosureController::class,'fileDelete']);
