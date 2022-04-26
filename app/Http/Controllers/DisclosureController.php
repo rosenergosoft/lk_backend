@@ -51,7 +51,7 @@ class DisclosureController extends Controller
      * @param $group
      * @return JsonResponse
      */
-    public function getList($group): JsonResponse
+    public function getList($group, $type = false): JsonResponse
     {
         $list = DisclosureList::select('disclosure_list.*', 'disclosure.is_processed', 'disclosure.is_show')
             ->where("disclosure_list.group", $group)
@@ -59,8 +59,9 @@ class DisclosureController extends Controller
                 $join->on('disclosure.disclosure_label_id', '=', 'disclosure_list.id');
                 $join->on('disclosure.client_id', DB::raw(auth()->user()->client_id));
             })
-            ->orderBy('disclosure_list.type_label')
-            ->get();
+            ->orderBy('disclosure_list.type_label');
+        if($type) $list->where('type', $type);
+        $list = $list->get();
         if ($list) {
             return response()->json([
                 'disclosures' => $list
