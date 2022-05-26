@@ -36,7 +36,7 @@ Route::group([
 
 Route::post('registration',[AuthController::class,'registration']);
 
-Route::get('disclosure/list/{client_id?}', [DisclosureController::class,'getPublicList']);
+Route::get('disclosure/list/{client_id?}/{type?}', [DisclosureController::class,'getPublicList']);
 
 Route::group(['middleware' => ['api','active']],function ($router) {
     Route::group(['prefix' => 'client'], function () {
