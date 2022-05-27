@@ -12,14 +12,16 @@ class NewApplication extends Mailable
     use Queueable, SerializesModels;
 
     protected $url;
+    protected $userName;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($url)
+    public function __construct($url, $userName)
     {
         $this->url = $url;
+        $this->userName = $userName;
     }
 
     /**
@@ -30,7 +32,8 @@ class NewApplication extends Mailable
     public function build()
     {
         return $this->markdown('mails.newapplication', [
-            'url' => $this->url
+            'url' => $this->url,
+            'userName' => $this->userName
         ]);
     }
 }
