@@ -31,7 +31,7 @@ class NewApplication extends Mailable
      */
     public function build()
     {
-        return $this->markdown('mails.newapplication', [
+        return $this->subject('Новая заявка')->markdown('mails.newapplication', [
             'url' => $this->url,
             'userName' => $this->userName
         ]);
