@@ -37,6 +37,6 @@ class CompanyInformation extends Model {
 
     static function getValue($collection, $name) {
         $item = $collection->firstWhere('name', $name);
-        return $item->value;
+        return $item->value ?? "";
     }
 }
