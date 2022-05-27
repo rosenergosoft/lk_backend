@@ -348,7 +348,7 @@ class ApplicationController extends Controller
             }
 
             $client = ResClient::find($clientId);
-            Mail::to(CompanyInformation::getValue($companyInformation, 'email'))->send(new NewApplication('https://' . $client->host, $user->profile->fist_name . ' ' . $user->profile->middle_name . ' ' . $user->last_name));
+            Mail::to(CompanyInformation::getValue($companyInformation, 'email'))->send(new NewApplication('https://' . $client->host, $user->profile->first_name . ' ' . $user->profile->middle_name . ' ' . $user->profile->last_name));
 
             return response()->json([
                 'success' => true,
