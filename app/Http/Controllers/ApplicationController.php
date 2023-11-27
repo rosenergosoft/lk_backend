@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewApplication;
 use App\Models\AppDocs;
 use App\Models\Application;
 use App\Models\CompanyInformation;
 use App\Models\Documents;
 use App\Models\User;
 use App\Services\DocumentGenerationService;
+use http\Client;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Messages;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\Client as ResClient;
 
 class ApplicationController extends Controller
 {
@@ -325,7 +329,6 @@ class ApplicationController extends Controller
             $data['status'] = Application::STATUS_WAITING_COMPANY_RESPONSE;
             $application->update($data);
 
-
             $clientId = auth()->user()->client_id;
             $user = User::find(auth()->user()->id);
             $companyInformation = CompanyInformation::where('client_id', $clientId)->get();
@@ -343,6 +346,9 @@ class ApplicationController extends Controller
                     $document->save();
                 }
             }
+
+            $client = ResClient::find($clientId);
+            Mail::to(CompanyInformation::getValue($companyInformation, 'email'))->send(new NewApplication('https://' . $client->host, $user->profile->first_name . ' ' . $user->profile->middle_name . ' ' . $user->profile->last_name));
 
             return response()->json([
                 'success' => true,
