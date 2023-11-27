@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Spatie\Permission\Models\Role;
@@ -125,4 +126,11 @@ class User extends Authenticatable implements JWTSubject
         $permissions = $role->permissions->pluck('name');
         $this->syncPermissions($permissions);
     }
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+
 }

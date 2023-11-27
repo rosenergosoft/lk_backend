@@ -51,6 +51,11 @@ class AuthController extends Controller
         }
 
         $user = \auth()->user();
+
+        if($user->client->is_active == 0){
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
         if (!$user->hasRole('super')){
             $host = parse_url(\request()->headers->get('origin'));
             $client = Client::where('host',$host['host'])->first();
